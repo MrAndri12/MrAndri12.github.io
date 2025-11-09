@@ -611,79 +611,95 @@
             document.getElementById('registerForm').style.display = 'block';
         }
 
-        function showLogin() {
+        function showLoasync function register() {
+    const username = document.getElementById('regUsername').value.trim();
+    const password = document.getElementById('regPassword').value;
+    const confirmPassword = document.getElementById('regConfirmPassword').value;
+
+    if (!username || !password) {
+        alert("Заполните все поля!");
+        return;
+    }
+
+    if (password.length < 6) {
+        alert("Пароль должен содержать минимум 6 символов!");
+        return;
+    }
+
+    if (password !== confirmPassword) {
+        alert("Пароли не совпадают!");
+        return;
+    }
+
+    // Валидация username - убираем запрещенные символы для email
+    const cleanUsername = username.replace(/[^a-zA-Z0-9._%+-]/g, '');
+    
+    if (cleanUsername.length < 2) {
+        alert("Имя пользователя должно содержать только буквы, цифры и символы ._%+-");
+        return;
+    }
+
+    try {
+        // Создаем валидный email
+        const email = `${cleanUsername}@mrmessage.com`;
+        
+        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+        const user = userCredential.user;
+
+        const userData = {
+            username: username, // сохраняем оригинальное имя для отображения
+            email: email,
+            createdAt: Date.now(),
+            status: 'online'
+        };
+
+        await database.ref('users/' + user.uid).set(userData);
+        alert("Регистрация успешна!");
+        showChats();
+
+    } catch (error) {
+        console.error('Ошибка регистрации:', error);
+        alert("Ошибка регистрации: " + error.message);
+    }
+        }gin() {
             document.getElementById('registerForm').style.display = 'none';
             document.querySelector('#authScreen .auth-form').style.display = 'block';
         }
+async function login() {
+    const username = document.getElementById('loginUsername').value.trim();
+    const password = document.getElementById('loginPassword').value;
 
-        async function register() {
-            const username = document.getElementById('regUsername').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
+    if (!username || !password) {
+        alert("Заполните все поля!");
+        return;
+    }
 
-            if (!username || !password) {
-                alert("Заполните все поля!");
-                return;
-            }
+    try {
+        // Используем тот же домен, что и при регистрации
+        const cleanUsername = username.replace(/[^a-zA-Z0-9._%+-]/g, '');
+        const email = `${cleanUsername}@mrmessage.com`;
+        
+        const userCredential = await auth.signInWithEmailAndPassword(email, password);
+        currentUser = userCredential.user;
+        
+        // Загружаем данные пользователя
+        const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
+        currentUserData = userSnapshot.val();
+        
+        showChats();
 
-            if (password.length < 6) {
-                alert("Пароль должен содержать минимум 6 символов!");
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                alert("Пароли не совпадают!");
-                return;
-            }
-
-            try {
-                // Создаем пользователя с email на основе username
-                const email = `${username}@chat.com`;
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                const userData = {
-                    username: username,
-                    createdAt: Date.now(),
-                    status: 'online'
-                };
-
-                await database.ref('users/' + user.uid).set(userData);
-                alert("Регистрация успешна!");
-                showChats();
-
-            } catch (error) {
-                console.error('Ошибка регистрации:', error);
-                alert("Ошибка регистрации: " + error.message);
-            }
+    } catch (error) {
+        console.error('Ошибка входа:', error);
+        
+        if (error.code === 'auth/user-not-found') {
+            alert("Пользователь не найден. Зарегистрируйтесь сначала.");
+        } else if (error.code === 'auth/wrong-password') {
+            alert("Неверный пароль.");
+        } else {
+            alert("Ошибка входа: " + error.message);
         }
-
-        async function login() {
-            const username = document.getElementById('loginUsername').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            if (!username || !password) {
-                alert("Заполните все поля!");
-                return;
-            }
-
-            try {
-                // Логин с email на основе username
-                const email = `${username}@chat.com`;
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                currentUser = userCredential.user;
-                
-                // Загружаем данные пользователя
-                const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
-                currentUserData = userSnapshot.val();
-                
-                showChats();
-
-            } catch (error) {
-                console.error('Ошибка входа:', error);
-                alert("Ошибка входа: " + error.message);
-            }
-        }
+    }
+}
 
         function showChats() {
             document.getElementById('authScreen').style.display = 'none';
