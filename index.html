@@ -606,12 +606,7 @@
         });
 
         // ФУНКЦИИ АВТОРИЗАЦИИ
-        function showRegister() {
-            document.querySelector('#authScreen .auth-form').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-        }
-
-        function showLoasync function register() {
+        async function register() {
     const username = document.getElementById('regUsername').value.trim();
     const password = document.getElementById('regPassword').value;
     const confirmPassword = document.getElementById('regConfirmPassword').value;
@@ -661,10 +656,8 @@
         console.error('Ошибка регистрации:', error);
         alert("Ошибка регистрации: " + error.message);
     }
-        }gin() {
-            document.getElementById('registerForm').style.display = 'none';
-            document.querySelector('#authScreen .auth-form').style.display = 'block';
         }
+        
 async function login() {
     const username = document.getElementById('loginUsername').value.trim();
     const password = document.getElementById('loginPassword').value;
