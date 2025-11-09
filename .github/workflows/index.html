@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MrMasage</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        body {
+            font-family: Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .app {
+            width: 100%;
+            max-width: 400px;
+            height: 90vh;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+        /* Стили для авторизации */
+        .auth-screen {
+            padding: 40px 20px;
+            text-align: center;
+        }
+        .auth-screen h1 {
+            color: #333;
+            margin-bottom: 30px;
+        }
+        .auth-form input {
+            width: 100%;
+            padding: 15px;
+            margin: 10px 0;
+            border: 2px solid #ddd;
+            border-radius: 10px;
+            font-size: 16px;
+        }
+        .auth-btn {
+            width: 100%;
+            padding: 15px;
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            cursor: pointer;
+            margin: 10px 0;
+        }
+        .auth-btn:hover {
+            background: #764ba2;
+        }
+        .switch-auth {
+            margin-top: 20px;
+            color: #666;
+            cursor: pointer;
+        }
+        /* Стили для чата */
+        .chat-screen {
+            display: none;
+            flex-direction: column;
+            height: 100%;
+        }
+        .chat-header {
+            background: #667eea;
+            color: white;
+            padding: 15px;
+            text-align: center;
+            position: relative;
+        }
+        .logout-btn {
+            position: absolute;
+            right: 15px;
+            top: 15px;
+            background: none;
+            border: none;
+            color: white;
+            cursor: pointer;
+        }
+        .messages-container {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            background: #f8f9fa;
+        }
+        .message {
+            max-width: 80%;
+            padding: 10px 15px;
+            margin: 5px 0;
+            border-radius: 15px;
+            word-wrap: break-word;
+        }
+        .my-message {
+            background: #667eea;
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        .other-message {
+            background: white;
+            border: 1px solid #ddd;
+            border-bottom-left-radius: 5px;
+        }
+        .message-sender {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 2px;
+        }
+        .message-image {
+            max-width: 100%;
+            border-radius: 10px;
+            margin-top: 5px;
+        }
+        .input-container {
+            display: flex;
+            padding: 15px;
+            background: white;
+            border-top: 1px solid #ddd;
+        }
+        .message-input {
+            flex: 1;
+            padding: 12px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            margin-right: 10px;
+        }
+        .send-btn, .file-btn {
+            background: #667eea;
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 45px;
+            height: 45px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .file-input {
+            display: none;
+        }
+        .online-users {
+            padding: 10px 15px;
+            background: #e9ecef;
+            border-bottom: 1px solid #ddd;
+            font-size: 14px;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <div class="app">
+        <!-- Экран авторизации -->
+        <div class="auth-screen" id="authScreen">
+            <h1>💬 Real Messenger</h1>
+            <div class="auth-form">
+                <input type="text" id="loginUsername" placeholder="Имя пользователя">
+                <input type="password" id="loginPassword" placeholder="Пароль">
+                <button class="auth-btn" onclick="login()">Войти</button>
+                <div class="switch-auth" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</div>
+            </div>
+            
+            <div class="auth-form" id="registerForm" style="display: none;">
+                <input type="text" id="regUsername" placeholder="Имя пользователя">
+                <input type="email" id="regEmail" placeholder="Email">
+                <input type="password" id="regPassword" placeholder="Пароль">
+                <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
+                <div class="switch-auth" onclick="showLogin()">Уже есть аккаунт? Войти</div>
+            </div>
+        </div>
+
+        <!-- Экран чата -->
+        <div class="chat-screen" id="chatScreen">
+            <div class="chat-header">
+                <button class="logout-btn" onclick="logout()">🚪</button>
+                <h2>Real Messenger</h2>
+                <div>Онлайн: <span id="onlineCount">0</span></div>
+            </div>
+            
+            <div class="online-users">
+                Пользователи онлайн: <span id="usersList"></span>
+            </div>
+            
+            <div class="messages-container" id="messagesContainer">
+                <!-- Сообщения будут здесь -->
+            </div>
+            
+            <div class="input-container">
+                <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение...">
+                <input type="file" class="file-input" id="fileInput" accept="image/*">
+                <button class="file-btn" onclick="document.getElementById('fileInput').click()">📎</button>
+                <button class="send-btn" onclick="sendMessage()">➤</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-storage-compat.js"></script>
+
+    <script>
+        // Конфигурация Firebase (замените на свою)
+        const firebaseConfig = {
+  apiKey: "AIzaSyCLmI4Ju5vsw3VY8VEvUpwm1g3Cliw_v14",
+  authDomain: "mrmeseg-11034.firebaseapp.com",
+  databaseURL: "https://mrmeseg-11034-default-rtdb.firebaseio.com",
+  projectId: "mrmeseg-11034",
+  storageBucket: "mrmeseg-11034.firebasestorage.app",
+  messagingSenderId: "704296390245",
+  appId: "1:704296390245:web:d6f6d35d3d88d84566c08c",
+  measurementId: "G-FT6RCWET63"
+};
+        
+
+        // Инициализация Firebase
+        firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
+        const database = firebase.database();
+        const storage = firebase.storage();
+
+        let currentUser = null;
+
+        // Показать форму регистрации
+        function showRegister() {
+            document.getElementById('authScreen').querySelector('.auth-form').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+        }
+
+        // Показать форму входа
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('authScreen').querySelector('.auth-form').style.display = 'block';
+        }
+
+        // Регистрация
+        async function register() {
+            const username = document.getElementById('regUsername').value;
+            const email = document.getElementById('regEmail').value;
+            const password = document.getElementById('regPassword').value;
+
+            try {
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
+                
+                // Сохраняем данные пользователя
+                await database.ref('users/' + user.uid).set({
+                    username: username,
+                    email: email,
+                    createdAt: Date.now()
+                });
+                
+                showChat(user);
+            } catch (error) {
+                alert('Ошибка регистрации: ' + error.message);
+            }
+        }
+
+        // Вход
+        async function login() {
+            const email = document.getElementById('loginUsername').value + '@messenger.com';
+            const password = document.getElementById('loginPassword').value;
+
+            try {
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                showChat(userCredential.user);
+            } catch (error) {
+                // Если вход не удался, пробуем найти пользователя по имени
+                try {
+                    const snapshot = await database.ref('users').orderByChild('username').equalTo(document.getElementById('loginUsername').value).once('value');
+                    if (snapshot.exists()) {
+                        const users = snapshot.val();
+                        const userId = Object.keys(users)[0];
+                        const userEmail = users[userId].email;
+                        
+                        const userCredential = await auth.signInWithEmailAndPassword(userEmail, password);
+                        showChat(userCredential.user);
+                    } else {
+                        alert('Пользователь не найден');
+                    }
+                } catch (error2) {
+                    alert('Ошибка входа: ' + error.message);
+                }
+            }
+        }
+
+        // Показать чат
+        function showChat(user) {
+            currentUser = user;
+            document.getElementById('authScreen').style.display = 'none';
+            document.getElementById('chatScreen').style.display = 'flex';
+            
+            // Загружаем данные пользователя
+            loadUserData();
+            // Загружаем сообщения
+            loadMessages();
+            // Следим за онлайн статусом
+            setupPresence();
+        }
+
+        // Загрузка данных пользователя
+        async function loadUserData() {
+            const userRef = database.ref('users/' + currentUser.uid);
+            userRef.on('value', (snapshot) => {
+                const userData = snapshot.val();
+                if (userData) {
+                    currentUser.username = userData.username;
+                }
+            });
+        }
+
+        // Настройка онлайн статуса
+        function setupPresence() {
+            const userStatusRef = database.ref('status/' + currentUser.uid);
+            const connectedRef = database.ref('.info/connected');
+            
+            connectedRef.on('value', (snapshot) => {
+                if (snapshot.val()) {
+                    userStatusRef.onDisconnect().set('offline');
+                    userStatusRef.set('online');
+                }
+            });
+
+            // Следим за онлайн пользователями
+            database.ref('status').on('value', (snapshot) => {
+                const statuses = snapshot.val();
+                let onlineUsers = [];
+                let onlineCount = 0;
+                
+                for (const userId in statuses) {
+                    if (statuses[userId] === 'online') {
+                        onlineCount++;
+                        // Получаем имя пользователя
+                        database.ref('users/' + userId + '/username').once('value', (userSnapshot) => {
+                            if (userSnapshot.exists() && userId !== currentUser.uid) {
+                                onlineUsers.push(userSnapshot.val());
+                                document.getElementById('usersList').textContent = onlineUsers.join(', ');
+                            }
+                        });
+                    }
+                }
+                
+                document.getElementById('onlineCount').textContent = onlineCount - 1; // Исключаем текущего пользователя
+            });
+        }
+
+        // Загрузка сообщений
+        function loadMessages() {
+            const messagesRef = database.ref('messages').limitToLast(50);
+            messagesRef.on('child_added', (snapshot) => {
+                const message = snapshot.val();
+                displayMessage(message);
+            });
+        }
+
+        // Отправка сообщения
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const fileInput = document.getElementById('fileInput');
+            const text = messageInput.value.trim();
+            const file = fileInput.files[0];
+
+            if (!text && !file) return;
+
+            let imageUrl = null;
+
+            // Если есть файл, загружаем его
+            if (file) {
+                try {
+                    const storageRef = storage.ref('images/' + Date.now() + '_' + file.name);
+                    const snapshot = await storageRef.put(file);
+                    imageUrl = await snapshot.ref.getDownloadURL();
+                } catch (error) {
+                    alert('Ошибка загрузки изображения: ' + error.message);
+                    return;
+                }
+            }
+
+            // Создаем сообщение
+            const message = {
+                text: text,
+                imageUrl: imageUrl,
+                senderId: currentUser.uid,
+                senderName: currentUser.username || 'Аноним',
+                timestamp: Date.now()
+            };
+
+            // Сохраняем в базе данных
+            await database.ref('messages').push(message);
+
+            // Очищаем поля
+            messageInput.value = '';
+            fileInput.value = '';
+        }
+
+        // Отображение сообщения
+        function displayMessage(message) {
+            const messagesContainer = document.getElementById('messagesContainer');
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${message.senderId === currentUser.uid ? 'my-message' : 'other-message'}`;
+            
+            let messageHTML = '';
+            if (message.senderId !== currentUser.uid) {
+                messageHTML += `<div class="message-sender">${message.senderName}</div>`;
+            }
+            
+            if (message.text) {
+                messageHTML += `<div>${message.text}</div>`;
+            }
+            
+            if (message.imageUrl) {
+                messageHTML += `<img src="${message.imageUrl}" class="message-image" onclick="openImage('${message.imageUrl}')">`;
+            }
+            
+            messageDiv.innerHTML = messageHTML;
+            messagesContainer.appendChild(messageDiv);
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        }
+
+        // Открытие изображения в полном размере
+        function openImage(url) {
+            window.open(url, '_blank');
+        }
+
+        // Обработка отправки по Enter
+        document.getElementById('messageInput').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendMessage();
+            }
+        });
+
+        // Обработка загрузки файла
+        document.getElementById('fileInput').addEventListener('change', (e) => {
+            if (e.target.files[0]) {
+                sendMessage();
+            }
+        });
+
+        // Выход
+        function logout() {
+            auth.signOut();
+            document.getElementById('chatScreen').style.display = 'none';
+            document.getElementById('authScreen').style.display = 'block';
+            currentUser = null;
+        }
+
+        // Автоматический вход при перезагрузке
+        auth.onAuthStateChanged((user) => {
+            if (user) {
+                showChat(user);
+            }
+        });
+    </script>
+</body>
+  </html>
