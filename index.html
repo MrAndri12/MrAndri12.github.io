@@ -63,6 +63,10 @@
         .auth-btn:hover {
             background: #764ba2;
         }
+        .auth-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
         .switch-auth {
             margin-top: 20px;
             color: #666;
@@ -73,6 +77,15 @@
             color: #667eea;
             cursor: pointer;
             font-size: 14px;
+        }
+        .error-message {
+            color: #dc3545;
+            font-size: 14px;
+            margin: 10px 0;
+            padding: 10px;
+            background: #ffe6e6;
+            border-radius: 5px;
+            display: none;
         }
 
         /* СПИСОК ЧАТОВ */
@@ -427,18 +440,20 @@
         <!-- ЭКРАН АВТОРИЗАЦИИ -->
         <div class="auth-screen" id="authScreen">
             <h1>💬 MrMessage</h1>
-            <div class="auth-form">
-                <input type="text" id="loginUsername" placeholder="Имя пользователя">
-                <input type="password" id="loginPassword" placeholder="Пароль">
-                <button class="auth-btn" onclick="login()">Войти</button>
+            <div class="error-message" id="authError"></div>
+            
+            <div class="auth-form" id="loginForm">
+                <input type="text" id="loginUsername" placeholder="Имя пользователя" autocomplete="username">
+                <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password">
+                <button class="auth-btn" onclick="login()" id="loginBtn">Войти</button>
                 <div class="switch-auth" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</div>
             </div>
             
             <div class="auth-form" id="registerForm" style="display: none;">
-                <input type="text" id="regUsername" placeholder="Имя пользователя">
-                <input type="password" id="regPassword" placeholder="Пароль">
-                <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль">
-                <button class="auth-btn" onclick="register()">Зарегистрироваться</button>
+                <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="username">
+                <input type="password" id="regPassword" placeholder="Пароль" autocomplete="new-password">
+                <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль" autocomplete="new-password">
+                <button class="auth-btn" onclick="register()" id="registerBtn">Зарегистрироваться</button>
                 <div class="switch-auth" onclick="showLogin()">Уже есть аккаунт? Войти</div>
             </div>
         </div>
@@ -581,6 +596,7 @@
                         // Создаем данные пользователя если их нет
                         currentUserData = {
                             username: user.email.split('@')[0],
+                            email: user.email,
                             createdAt: Date.now(),
                             status: 'online'
                         };
@@ -603,96 +619,196 @@
                     }
                 }
             };
+
+            // Обработка Enter в формах
+            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') login();
+            });
+            document.getElementById('regConfirmPassword').addEventListener('keypress', function(e) {
+                if (e.key === 'Enter') register();
+            });
         });
 
         // ФУНКЦИИ АВТОРИЗАЦИИ
+        function showRegister() {
+            document.getElementById('loginForm').style.display = 'none';
+            document.getElementById('registerForm').style.display = 'block';
+            hideAuthError();
+            clearAuthForms();
+        }
+
+        function showLogin() {
+            document.getElementById('registerForm').style.display = 'none';
+            document.getElementById('loginForm').style.display = 'block';
+            hideAuthError();
+            clearAuthForms();
+        }
+
+        function showAuthError(message) {
+            const errorElement = document.getElementById('authError');
+            errorElement.textContent = message;
+            errorElement.style.display = 'block';
+        }
+
+        function hideAuthError() {
+            document.getElementById('authError').style.display = 'none';
+        }
+
+        function clearAuthForms() {
+            document.getElementById('loginUsername').value = '';
+            document.getElementById('loginPassword').value = '';
+            document.getElementById('regUsername').value = '';
+            document.getElementById('regPassword').value = '';
+            document.getElementById('regConfirmPassword').value = '';
+        }
+
+        function setAuthButtonLoading(buttonId, isLoading) {
+            const button = document.getElementById(buttonId);
+            if (isLoading) {
+                button.disabled = true;
+                button.textContent = 'Загрузка...';
+            } else {
+                button.disabled = false;
+                button.textContent = buttonId === 'loginBtn' ? 'Войти' : 'Зарегистрироваться';
+            }
+        }
+
+        function validateUsername(username) {
+            // Разрешаем буквы, цифры, точки, дефисы и подчеркивания
+            return /^[a-zA-Z0-9._-]+$/.test(username) && username.length >= 3 && username.length <= 20;
+        }
+
         async function register() {
-    const username = document.getElementById('regUsername').value.trim();
-    const password = document.getElementById('regPassword').value;
-    const confirmPassword = document.getElementById('regConfirmPassword').value;
+            const username = document.getElementById('regUsername').value.trim();
+            const password = document.getElementById('regPassword').value;
+            const confirmPassword = document.getElementById('regConfirmPassword').value;
 
-    if (!username || !password) {
-        alert("Заполните все поля!");
-        return;
-    }
+            hideAuthError();
 
-    if (password.length < 6) {
-        alert("Пароль должен содержать минимум 6 символов!");
-        return;
-    }
+            if (!username || !password || !confirmPassword) {
+                showAuthError("Заполните все поля!");
+                return;
+            }
 
-    if (password !== confirmPassword) {
-        alert("Пароли не совпадают!");
-        return;
-    }
+            if (!validateUsername(username)) {
+                showAuthError("Имя пользователя должно содержать только буквы, цифры, точки, дефисы и подчеркивания (3-20 символов)");
+                return;
+            }
 
-    // Валидация username - убираем запрещенные символы для email
-    const cleanUsername = username.replace(/[^a-zA-Z0-9._%+-]/g, '');
-    
-    if (cleanUsername.length < 2) {
-        alert("Имя пользователя должно содержать только буквы, цифры и символы ._%+-");
-        return;
-    }
+            if (password.length < 6) {
+                showAuthError("Пароль должен содержать минимум 6 символов!");
+                return;
+            }
 
-    try {
-        // Создаем валидный email
-        const email = `${cleanUsername}@mrmessage.com`;
-        
-        const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-        const user = userCredential.user;
+            if (password !== confirmPassword) {
+                showAuthError("Пароли не совпадают!");
+                return;
+            }
 
-        const userData = {
-            username: username, // сохраняем оригинальное имя для отображения
-            email: email,
-            createdAt: Date.now(),
-            status: 'online'
-        };
+            setAuthButtonLoading('registerBtn', true);
 
-        await database.ref('users/' + user.uid).set(userData);
-        alert("Регистрация успешна!");
-        showChats();
+            try {
+                // Создаем валидный email
+                const email = `${username.toLowerCase()}@mrmessage.com`;
+                
+                console.log('Регистрация пользователя:', { username, email });
+                
+                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
+                const user = userCredential.user;
 
-    } catch (error) {
-        console.error('Ошибка регистрации:', error);
-        alert("Ошибка регистрации: " + error.message);
-    }
+                console.log('Пользователь создан:', user.uid);
+
+                const userData = {
+                    username: username,
+                    email: email,
+                    createdAt: Date.now(),
+                    status: 'online'
+                };
+
+                await database.ref('users/' + user.uid).set(userData);
+                console.log('Данные пользователя сохранены');
+
+                // Автоматически входим после регистрации
+                currentUser = user;
+                currentUserData = userData;
+                showChats();
+
+            } catch (error) {
+                console.error('Ошибка регистрации:', error);
+                
+                if (error.code === 'auth/email-already-in-use') {
+                    showAuthError("Пользователь с таким именем уже существует");
+                } else if (error.code === 'auth/weak-password') {
+                    showAuthError("Пароль слишком слабый");
+                } else if (error.code === 'auth/operation-not-allowed') {
+                    showAuthError("Регистрация временно недоступна");
+                } else {
+                    showAuthError("Ошибка регистрации: " + error.message);
+                }
+            } finally {
+                setAuthButtonLoading('registerBtn', false);
+            }
         }
-        
-async function login() {
-    const username = document.getElementById('loginUsername').value.trim();
-    const password = document.getElementById('loginPassword').value;
 
-    if (!username || !password) {
-        alert("Заполните все поля!");
-        return;
-    }
+        async function login() {
+            const username = document.getElementById('loginUsername').value.trim();
+            const password = document.getElementById('loginPassword').value;
 
-    try {
-        // Используем тот же домен, что и при регистрации
-        const cleanUsername = username.replace(/[^a-zA-Z0-9._%+-]/g, '');
-        const email = `${cleanUsername}@mrmessage.com`;
-        
-        const userCredential = await auth.signInWithEmailAndPassword(email, password);
-        currentUser = userCredential.user;
-        
-        // Загружаем данные пользователя
-        const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
-        currentUserData = userSnapshot.val();
-        
-        showChats();
+            hideAuthError();
 
-    } catch (error) {
-        console.error('Ошибка входа:', error);
-        
-        if (error.code === 'auth/user-not-found') {
-            alert("Пользователь не найден. Зарегистрируйтесь сначала.");
-        } else if (error.code === 'auth/wrong-password') {
-            alert("Неверный пароль.");
-        } else {
-            alert("Ошибка входа: " + error.message);
+            if (!username || !password) {
+                showAuthError("Заполните все поля!");
+                return;
+            }
+
+            setAuthButtonLoading('loginBtn', true);
+
+            try {
+                // Используем тот же домен, что и при регистрации
+                const email = `${username.toLowerCase()}@mrmessage.com`;
+                
+                console.log('Вход пользователя:', { username, email });
+                
+                const userCredential = await auth.signInWithEmailAndPassword(email, password);
+                currentUser = userCredential.user;
+                
+                console.log('Пользователь вошел:', currentUser.uid);
+                
+                // Загружаем данные пользователя
+                const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
+                currentUserData = userSnapshot.val();
+                
+                if (!currentUserData) {
+                    // Создаем данные пользователя если их нет
+                    currentUserData = {
+                        username: username,
+                        email: email,
+                        createdAt: Date.now(),
+                        status: 'online'
+                    };
+                    await database.ref('users/' + currentUser.uid).set(currentUserData);
+                }
+                
+                showChats();
+
+            } catch (error) {
+                console.error('Ошибка входа:', error);
+                
+                if (error.code === 'auth/user-not-found') {
+                    showAuthError("Пользователь не найден. Зарегистрируйтесь сначала.");
+                } else if (error.code === 'auth/wrong-password') {
+                    showAuthError("Неверный пароль.");
+                } else if (error.code === 'auth/invalid-email') {
+                    showAuthError("Неверный формат имени пользователя");
+                } else if (error.code === 'auth/too-many-requests') {
+                    showAuthError("Слишком много попыток входа. Попробуйте позже.");
+                } else {
+                    showAuthError("Ошибка входа: " + error.message);
+                }
+            } finally {
+                setAuthButtonLoading('loginBtn', false);
+            }
         }
-    }
-}
 
         function showChats() {
             document.getElementById('authScreen').style.display = 'none';
@@ -701,6 +817,7 @@ async function login() {
             loadChats();
         }
 
+        // ОСТАЛЬНЫЕ ФУНКЦИИ (без изменений)
         // ЗАГРУЗКА ДАННЫХ
         async function loadAllUsers() {
             console.log('Загрузка всех пользователей...');
