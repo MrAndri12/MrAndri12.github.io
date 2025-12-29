@@ -3,772 +3,498 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MrMessage</title>
+    <title>🎄 MrMessage - Новогодний</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <link rel="stylesheet" href="styles.css">
     <style>
-        :root {
-            --primary-color: #667eea;
-            --secondary-color: #764ba2;
-            --bg-color: #ffffff;
-            --text-color: #333333;
-            --border-color: #dddddd;
-            --message-bg: #f8f9fa;
-            --my-message-bg: #667eea;
-            --my-message-color: #ffffff;
-            --header-bg: #667eea;
-            --header-color: #ffffff;
-        }
-
-        [data-theme="dark"] {
-            --primary-color: #7c93e0;
-            --secondary-color: #8a68a8;
-            --bg-color: #1a1a1a;
-            --text-color: #ffffff;
-            --border-color: #444444;
-            --message-bg: #2d2d2d;
-            --my-message-bg: #7c93e0;
-            --my-message-color: #ffffff;
-            --header-bg: #2d2d2d;
-            --header-color: #ffffff;
-        }
-
+        /* Базовые стили */
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
         }
+        
         body {
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: linear-gradient(135deg, var(--primary-color) 0%, var(--secondary-color) 100%);
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: var(--text-color);
-            transition: all 0.3s ease;
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
+            min-height: 100vh;
+            overflow-x: hidden;
         }
-        .app {
-            width: 100%;
-            max-width: 400px;
-            height: 90vh;
-            background: var(--bg-color);
-            border-radius: 20px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            position: relative;
-            transition: all 0.3s ease;
-        }
-
-        /* АВТОРИЗАЦИЯ */
-        .auth-screen {
-            padding: 40px 20px;
-            text-align: center;
-        }
-        .auth-screen h1 {
-            color: var(--text-color);
-            margin-bottom: 30px;
-        }
-        .auth-form input {
-            width: 100%;
-            padding: 15px;
-            margin: 10px 0;
-            border: 2px solid var(--border-color);
-            border-radius: 10px;
-            font-size: 16px;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-        .auth-btn {
-            width: 100%;
-            padding: 15px;
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            cursor: pointer;
-            margin: 10px 0;
-            transition: background 0.3s ease;
-        }
-        .auth-btn:hover {
-            background: var(--secondary-color);
-        }
-        .auth-btn:disabled {
-            background: #ccc;
-            cursor: not-allowed;
-        }
-        .switch-auth {
-            margin-top: 20px;
-            color: var(--text-color);
-            cursor: pointer;
-            opacity: 0.8;
-        }
-        .forgot-password {
-            margin-top: 10px;
-            color: var(--primary-color);
-            cursor: pointer;
-            font-size: 14px;
-        }
-        .error-message {
-            color: #dc3545;
-            font-size: 14px;
-            margin: 10px 0;
-            padding: 10px;
-            background: #ffe6e6;
-            border-radius: 5px;
-            display: none;
-        }
-
-        /* СПИСОК ЧАТОВ */
-        .chats-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-        .chats-header {
-            background: var(--header-bg);
-            color: var(--header-color);
-            padding: 15px;
-            text-align: center;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .header-left, .header-right {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .theme-toggle {
-            background: none;
-            border: none;
-            color: var(--header-color);
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .profile-btn {
-            background: none;
-            border: none;
-            color: var(--header-color);
-            cursor: pointer;
-            font-size: 18px;
-        }
-        .chats-list {
-            flex: 1;
-            overflow-y: auto;
-            background: var(--message-bg);
-        }
-        .chat-item {
-            padding: 15px;
-            border-bottom: 1px solid var(--border-color);
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            background: var(--bg-color);
-            transition: background 0.3s ease;
-        }
-        .chat-item:hover {
-            background: var(--message-bg);
-        }
-        .chat-avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: bold;
-            margin-right: 15px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-        }
-        .chat-info {
-            flex: 1;
-        }
-        .chat-name {
-            font-weight: bold;
-            margin-bottom: 5px;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .chat-type {
-            font-size: 12px;
-            opacity: 0.7;
-        }
-        .last-message {
-            color: var(--text-color);
-            opacity: 0.7;
-            font-size: 14px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            display: flex;
-            align-items: center;
-            gap: 5px;
-        }
-        .message-icon {
-            font-size: 12px;
-        }
-
-        /* ЭКРАН ЧАТА */
-        .chat-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-        }
-        .chat-header {
-            background: var(--header-bg);
-            color: var(--header-color);
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            position: relative;
-        }
-        .back-btn {
-            background: none;
-            border: none;
-            color: var(--header-color);
-            cursor: pointer;
-            margin-right: 15px;
-            font-size: 18px;
-        }
-        .chat-user-info {
-            flex: 1;
-        }
-        .chat-user-name {
-            font-weight: bold;
-        }
-        .chat-user-status {
-            font-size: 12px;
-            opacity: 0.8;
-        }
-        .messages-container {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            background: var(--message-bg);
-        }
-        .message {
-            max-width: 80%;
-            padding: 10px 15px;
-            margin: 5px 0;
-            border-radius: 15px;
-            word-wrap: break-word;
-            position: relative;
-        }
-        .my-message {
-            background: var(--my-message-bg);
-            color: var(--my-message-color);
-            margin-left: auto;
-            border-bottom-right-radius: 5px;
-        }
-        .other-message {
-            background: var(--bg-color);
-            border: 1px solid var(--border-color);
-            border-bottom-left-radius: 5px;
-        }
-        .message-time {
-            font-size: 11px;
-            opacity: 0.7;
-            text-align: right;
-            margin-top: 5px;
-        }
-        .message-file {
-            margin-top: 5px;
-            padding: 8px;
-            background: rgba(255,255,255,0.2);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .voice-message {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            padding: 8px 12px;
-            background: rgba(255,255,255,0.1);
-            border-radius: 20px;
-        }
-        .voice-play-btn {
-            background: none;
-            border: none;
-            color: inherit;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        .message-image {
-            max-width: 100%;
-            border-radius: 10px;
-            margin-bottom: 5px;
-            max-height: 300px;
-            object-fit: cover;
-        }
-
-        /* ВВОД СООБЩЕНИЙ */
-        .input-container {
-            display: flex;
-            padding: 15px;
-            background: var(--bg-color);
-            border-top: 1px solid var(--border-color);
-            align-items: center;
-            gap: 10px;
-        }
-        .message-input {
-            flex: 1;
-            padding: 12px;
-            border: 2px solid var(--border-color);
-            border-radius: 25px;
-            background: var(--bg-color);
-            color: var(--text-color);
-        }
-        .attach-btn, .voice-btn, .send-btn {
-            background: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 50%;
-            width: 45px;
-            height: 45px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: background 0.3s ease;
-        }
-        .attach-btn:hover, .voice-btn:hover, .send-btn:hover {
-            background: var(--secondary-color);
-        }
-        .recording {
-            background: #dc3545 !important;
-            animation: pulse 1s infinite;
-        }
-        @keyframes pulse {
-            0% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-            100% { transform: scale(1); }
-        }
-
-        /* ЗВОНКИ */
-        .call-screen {
-            display: none;
-            flex-direction: column;
-            height: 100%;
-            background: #000;
-            color: white;
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 2000;
-        }
-        .call-header {
-            padding: 20px;
-            text-align: center;
-            background: rgba(0,0,0,0.7);
-        }
-        .call-user-name {
-            font-size: 24px;
-            margin-bottom: 5px;
-        }
-        .call-status {
-            font-size: 16px;
-            color: #ccc;
-        }
-        .video-container {
-            flex: 1;
-            position: relative;
-            background: #000;
-        }
-        .remote-video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .local-video {
-            position: absolute;
-            bottom: 20px;
-            right: 20px;
-            width: 120px;
-            height: 160px;
-            border-radius: 10px;
-            border: 2px solid white;
-            object-fit: cover;
-        }
-        .call-controls {
-            padding: 20px;
-            background: rgba(0,0,0,0.7);
-            display: flex;
-            justify-content: center;
-            gap: 20px;
-        }
-        .call-btn {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-        }
-        .accept-call {
-            background: #28a745;
-            color: white;
-        }
-        .reject-call {
-            background: #dc3545;
-            color: white;
-        }
-        .end-call {
-            background: #dc3545;
-            color: white;
-        }
-        .mute-btn {
-            background: #6c757d;
-            color: white;
-        }
-        .video-btn {
-            background: #17a2b8;
-            color: white;
-        }
-
-        /* ВХОДЯЩИЙ ЗВОНОК */
-        .incoming-call {
-            display: none;
-            position: absolute;
-            top: 50%;
-            left: 50%;
-            transform: translate(-50%, -50%);
-            background: rgba(0,0,0,0.9);
-            padding: 30px;
-            border-radius: 20px;
-            text-align: center;
-            z-index: 3000;
-            color: white;
-            min-width: 300px;
-        }
-        .incoming-call-buttons {
-            display: flex;
-            gap: 15px;
-            justify-content: center;
-            margin-top: 20px;
-        }
-
-        /* МОДАЛЬНЫЕ ОКНА */
-        .modal {
-            display: none;
+        
+        .loading-screen {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.5);
-            z-index: 1000;
-            justify-content: center;
-            align-items: center;
-        }
-        .modal-content {
-            background: var(--bg-color);
-            padding: 30px;
-            border-radius: 15px;
-            width: 90%;
-            max-width: 400px;
-            color: var(--text-color);
-        }
-        .modal-buttons {
+            background: linear-gradient(135deg, #1a2980, #26d0ce);
             display: flex;
-            gap: 10px;
-            margin-top: 20px;
-        }
-        .modal-btn {
-            flex: 1;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            cursor: pointer;
-        }
-        .primary-btn {
-            background: var(--primary-color);
-            color: white;
-        }
-        .secondary-btn {
-            background: #6c757d;
-            color: white;
-        }
-
-        /* ПРОФИЛЬ И НАСТРОЙКИ */
-        .profile-section {
-            margin: 20px 0;
-        }
-        .profile-avatar {
-            width: 100px;
-            height: 100px;
-            border-radius: 50%;
-            background: var(--primary-color);
-            margin: 0 auto 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-            font-size: 40px;
-            background-size: cover;
-            background-position: center;
-            background-repeat: no-repeat;
-            cursor: pointer;
-            position: relative;
-            border: 3px solid var(--primary-color);
-        }
-        .profile-avatar input {
-            position: absolute;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-        .avatar-overlay {
-            position: absolute;
-            bottom: 0;
-            left: 0;
-            right: 0;
-            background: rgba(0,0,0,0.7);
-            color: white;
-            padding: 5px;
-            font-size: 12px;
-            text-align: center;
-            border-radius: 0 0 50% 50%;
-        }
-
-        /* ЗАПИСЬ ГОЛОСА */
-        .voice-recorder {
-            position: absolute;
-            bottom: 80px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--bg-color);
-            padding: 20px;
-            border-radius: 15px;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.3);
-            display: none;
             flex-direction: column;
+            justify-content: center;
             align-items: center;
-            gap: 15px;
-            z-index: 1000;
-            border: 2px solid var(--primary-color);
+            z-index: 9999;
+            color: white;
         }
-        .voice-timer {
-            font-size: 18px;
-            font-weight: bold;
+        
+        .loader {
+            width: 50px;
+            height: 50px;
+            border: 5px solid white;
+            border-top: 5px solid #2ecc71;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin-bottom: 20px;
         }
-        .voice-wave {
-            width: 200px;
-            height: 40px;
-            background: var(--message-bg);
-            border-radius: 20px;
-            overflow: hidden;
-        }
-        .voice-wave-inner {
-            height: 100%;
-            background: var(--primary-color);
-            width: 0%;
-            transition: width 0.1s ease;
-        }
-
-        .loading {
-            padding: 20px;
-            text-align: center;
-            color: var(--text-color);
-            opacity: 0.7;
-        }
-        .error {
-            padding: 20px;
-            text-align: center;
-            color: #dc3545;
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
         }
     </style>
 </head>
 <body>
-    <div class="app">
-        <!-- ЭКРАН АВТОРИЗАЦИИ -->
-        <div class="auth-screen" id="authScreen">
-            <h1>💬 MrMessage</h1>
-            <div class="error-message" id="authError"></div>
-            
-            <div class="auth-form" id="loginForm">
-                <input type="email" id="loginEmail" placeholder="Email" autocomplete="email" required>
-                <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password" required>
-                <button class="auth-btn" onclick="login()" id="loginBtn">Войти</button>
-                <div class="forgot-password" onclick="showForgotPassword()">Забыли пароль?</div>
-                <div class="switch-auth" onclick="showRegister()">Нет аккаунта? Зарегистрироваться</div>
-            </div>
-            
-            <div class="auth-form" id="registerForm" style="display: none;">
-                <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="username" required>
-                <input type="email" id="regEmail" placeholder="Email" autocomplete="email" required>
-                <input type="password" id="regPassword" placeholder="Пароль" autocomplete="new-password" required>
-                <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль" autocomplete="new-password" required>
-                <button class="auth-btn" onclick="register()" id="registerBtn">Зарегистрироваться</button>
-                <div class="switch-auth" onclick="showLogin()">Уже есть аккаунт? Войти</div>
-            </div>
+    <!-- Экран загрузки -->
+    <div class="loading-screen" id="loadingScreen">
+        <div class="loader"></div>
+        <h2>Загрузка MrMessage...</h2>
+    </div>
 
-            <div class="auth-form" id="forgotPasswordForm" style="display: none;">
-                <input type="email" id="forgotEmail" placeholder="Введите ваш email" required>
-                <button class="auth-btn" onclick="sendPasswordReset()" id="resetBtn">Восстановить пароль</button>
-                <div class="switch-auth" onclick="showLogin()">Вернуться к входу</div>
+    <!-- Новогодние украшения -->
+    <div class="snowflakes" aria-hidden="true">
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+        <div class="snowflake">❄</div>
+        <div class="snowflake">❅</div>
+        <div class="snowflake">❆</div>
+    </div>
+
+    <!-- Новогодний баннер -->
+    <div class="new-year-banner animate__animated animate__bounceInDown" id="newYearBanner" style="display: none;">
+        🎄 С Новым Годом! 🎅
+        <button onclick="hideBanner()" class="close-banner">×</button>
+    </div>
+
+    <!-- Основное приложение -->
+    <div class="app-container" id="appContainer" style="display: none;">
+        <!-- Экран авторизации -->
+        <div id="authScreen" class="screen active">
+            <div class="auth-container animate__animated animate__fadeIn">
+                <div class="auth-header">
+                    <div class="logo">
+                        <i class="fas fa-comments"></i>
+                        <h1>MrMessage</h1>
+                    </div>
+                    <p class="subtitle">Новогоднее обновление 🎁</p>
+                </div>
+                
+                <div class="auth-forms">
+                    <!-- Форма входа -->
+                    <div class="auth-form" id="loginForm">
+                        <h2><i class="fas fa-sign-in-alt"></i> Вход</h2>
+                        <div class="error-message" id="authError" style="display: none;"></div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="loginEmail" placeholder="Email" autocomplete="email" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="loginPassword" placeholder="Пароль" autocomplete="current-password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('loginPassword')"></i>
+                        </div>
+                        
+                        <button class="auth-btn" onclick="login()" id="loginBtn">
+                            <i class="fas fa-sign-in-alt"></i> Войти
+                        </button>
+                        
+                        <div class="auth-links">
+                            <a href="javascript:void(0)" onclick="showForgotPassword()" class="forgot-link">
+                                <i class="fas fa-key"></i> Забыли пароль?
+                            </a>
+                            <a href="javascript:void(0)" onclick="showRegister()" class="switch-link">
+                                <i class="fas fa-user-plus"></i> Нет аккаунта?
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма регистрации -->
+                    <div class="auth-form" id="registerForm" style="display: none;">
+                        <h2><i class="fas fa-user-plus"></i> Регистрация</h2>
+                        <div class="error-message" id="regError" style="display: none;"></div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="regUsername" placeholder="Имя пользователя" autocomplete="username" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="regEmail" placeholder="Email" autocomplete="email" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="regPassword" placeholder="Пароль" autocomplete="new-password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regPassword')"></i>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-lock"></i>
+                            <input type="password" id="regConfirmPassword" placeholder="Подтвердите пароль" autocomplete="new-password" required>
+                            <i class="fas fa-eye toggle-password" onclick="togglePassword('regConfirmPassword')"></i>
+                        </div>
+                        
+                        <button class="auth-btn" onclick="register()" id="registerBtn">
+                            <i class="fas fa-user-plus"></i> Зарегистрироваться
+                        </button>
+                        
+                        <div class="auth-links">
+                            <a href="javascript:void(0)" onclick="showLogin()" class="switch-link">
+                                <i class="fas fa-sign-in-alt"></i> Уже есть аккаунт?
+                            </a>
+                        </div>
+                    </div>
+                    
+                    <!-- Форма восстановления пароля -->
+                    <div class="auth-form" id="forgotPasswordForm" style="display: none;">
+                        <h2><i class="fas fa-key"></i> Восстановление</h2>
+                        <div class="error-message" id="forgotError" style="display: none;"></div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="forgotEmail" placeholder="Введите ваш email" required>
+                        </div>
+                        
+                        <button class="auth-btn" onclick="sendPasswordReset()" id="resetBtn">
+                            <i class="fas fa-paper-plane"></i> Восстановить
+                        </button>
+                        
+                        <div class="auth-links">
+                            <a href="javascript:void(0)" onclick="showLogin()" class="switch-link">
+                                <i class="fas fa-arrow-left"></i> Вернуться к входу
+                            </a>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="auth-footer">
+                    <p>🎄 Праздничная версия • 2024</p>
+                </div>
             </div>
         </div>
 
-        <!-- ЭКРАН СПИСКА ЧАТОВ -->
-        <div class="chats-screen" id="chatsScreen">
-            <div class="chats-header">
-                <div class="header-left">
-                    <button class="theme-toggle" onclick="toggleTheme()" title="Сменить тему">
-                        <i class="fas fa-palette"></i>
-                    </button>
-                    <button class="new-chat-btn" onclick="showNewChatModal()">💬</button>
+        <!-- Экран списка чатов -->
+        <div id="chatsScreen" class="screen">
+            <div class="chats-container">
+                <!-- Шапка чатов -->
+                <div class="chats-header">
+                    <div class="header-left">
+                        <button class="header-btn theme-toggle" onclick="toggleTheme()" title="Сменить тему">
+                            <i class="fas fa-palette"></i>
+                        </button>
+                        <h2><i class="fas fa-comments"></i> Мои чаты</h2>
+                    </div>
+                    <div class="header-right">
+                        <button class="header-btn" onclick="showProfileModal()" title="Профиль">
+                            <i class="fas fa-user"></i>
+                        </button>
+                        <button class="header-btn" onclick="logout()" title="Выйти">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
                 </div>
-                <h2>Мои чаты</h2>
-                <div class="header-right">
-                    <button class="new-group-btn" onclick="showNewGroupModal()" title="Создать группу">
-                        <i class="fas fa-users"></i>
+                
+                <!-- Поиск чатов -->
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchChats" placeholder="Поиск чатов и сообщений..." oninput="filterChats()">
+                    <button class="search-btn" onclick="clearSearch()" title="Очистить">
+                        <i class="fas fa-times"></i>
                     </button>
-                    <button class="profile-btn" onclick="showProfileModal()" title="Профиль">
-                        <i class="fas fa-user"></i>
-                    </button>
-                    <button class="logout-btn" onclick="logout()" title="Выйти">🚪</button>
                 </div>
-            </div>
-            <div class="chats-list" id="chatsList">
-                <div class="loading">Загрузка чатов...</div>
+                
+                <!-- Список чатов -->
+                <div class="chats-list" id="chatsList">
+                    <div class="loading-chats">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Загрузка чатов...</p>
+                    </div>
+                </div>
             </div>
         </div>
 
-        <!-- ЭКРАН ЧАТА -->
-        <div class="chat-screen" id="chatScreen">
-            <div class="chat-header">
-                <button class="back-btn" onclick="showChatsList()">←</button>
-                <div class="chat-user-info">
-                    <div class="chat-user-name" id="chatUserName">Имя пользователя</div>
-                    <div class="chat-user-status" id="chatUserStatus">в сети</div>
+        <!-- Экран чата -->
+        <div id="chatScreen" class="screen">
+            <div class="chat-container">
+                <!-- Шапка чата -->
+                <div class="chat-header">
+                    <button class="back-btn" onclick="showChatsList()">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    <div class="chat-user-info">
+                        <div class="chat-avatar-small" id="chatAvatar">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="chat-details">
+                            <div class="chat-user-name" id="chatUserName">Загрузка...</div>
+                            <div class="chat-user-status" id="chatUserStatus">● онлайн</div>
+                        </div>
+                    </div>
+                    <div class="chat-actions">
+                        <button class="action-btn" onclick="startVoiceCall()" title="Аудио звонок">
+                            <i class="fas fa-phone"></i>
+                        </button>
+                        <button class="action-btn" onclick="startVideoCall()" title="Видео звонок">
+                            <i class="fas fa-video"></i>
+                        </button>
+                        <button class="action-btn" onclick="showChatInfo()" title="Информация">
+                            <i class="fas fa-info-circle"></i>
+                        </button>
+                    </div>
                 </div>
-                <div class="call-buttons">
-                    <button class="call-icon-btn" onclick="startVoiceCall()" title="Аудио звонок">📞</button>
-                    <button class="call-icon-btn" onclick="startVideoCall()" title="Видео звонок">📹</button>
+                
+                <!-- Сообщения -->
+                <div class="messages-container" id="messagesContainer">
+                    <div class="loading-messages">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        <p>Загрузка сообщений...</p>
+                    </div>
+                </div>
+                
+                <!-- Ввод сообщения -->
+                <div class="input-container">
+                    <button class="attach-btn" onclick="showAttachMenu()" title="Прикрепить файл">
+                        <i class="fas fa-paperclip"></i>
+                    </button>
+                    <input type="text" class="message-input" id="messageInput" 
+                           placeholder="Введите сообщение..." 
+                           onkeypress="handleKeyPress(event)">
+                    <button class="voice-btn" onclick="toggleVoiceRecording()" title="Голосовое сообщение">
+                        <i class="fas fa-microphone"></i>
+                    </button>
+                    <button class="send-btn" onclick="sendMessage()">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
                 </div>
             </div>
-            <div class="messages-container" id="messagesContainer">
-                <div class="loading">Загрузка сообщений...</div>
+        </div>
+    </div>
+
+    <!-- FAB кнопка -->
+    <div class="fab-container" id="fabContainer" style="display: none;">
+        <button class="fab-main" id="mainFab">
+            <i class="fas fa-plus"></i>
+        </button>
+        <div class="fab-menu">
+            <button class="fab-item" onclick="showNewChatModal()">
+                <i class="fas fa-user-plus"></i>
+                <span>Новый чат</span>
+            </button>
+            <button class="fab-item" onclick="showNewGroupModal()">
+                <i class="fas fa-users"></i>
+                <span>Новая группа</span>
+            </button>
+            <button class="fab-item" onclick="showSearchModal()">
+                <i class="fas fa-search"></i>
+                <span>Поиск</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- Модальные окна -->
+    <div class="modal-overlay" id="modalOverlay" style="display: none;"></div>
+    
+    <!-- Модалка нового чата -->
+    <div class="modal" id="newChatModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user-plus"></i> Новый чат</h3>
+                <button class="modal-close" onclick="hideModal('newChatModal')">×</button>
             </div>
-            <div class="input-container">
-                <button class="attach-btn" onclick="showAttachMenu()" title="Прикрепить файл">
-                    <i class="fas fa-paperclip"></i>
+            <div class="modal-body">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchUser" placeholder="Поиск пользователя..." 
+                           oninput="filterUsers()">
+                </div>
+                <div class="users-list" id="searchResults">
+                    <div class="loading">Загрузка пользователей...</div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn secondary-btn" onclick="hideModal('newChatModal')">
+                    Отмена
                 </button>
-                <input type="text" class="message-input" id="messageInput" placeholder="Введите сообщение..." onkeypress="handleKeyPress(event)">
-                <button class="voice-btn" onclick="toggleVoiceRecording()" title="Голосовое сообщение">
-                    <i class="fas fa-microphone"></i>
-                </button>
-                <button class="send-btn" onclick="sendMessage()">➤</button>
             </div>
         </div>
+    </div>
 
-        <!-- ЭКРАН ЗВОНКА -->
-        <div class="call-screen" id="callScreen">
+    <!-- Модалка новой группы -->
+    <div class="modal" id="newGroupModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-users"></i> Новая группа</h3>
+                <button class="modal-close" onclick="hideModal('newGroupModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="group-form">
+                    <div class="input-group">
+                        <input type="text" id="groupName" placeholder="Название группы" required>
+                    </div>
+                    
+                    <div class="group-avatar-upload" onclick="document.getElementById('groupAvatarInput').click()">
+                        <div class="avatar-preview" id="groupAvatarPreview">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <input type="file" id="groupAvatarInput" accept="image/*" 
+                               onchange="previewGroupAvatar(event)" style="display: none;">
+                        <div class="avatar-label">Выберите аватар группы</div>
+                    </div>
+                    
+                    <div class="members-section">
+                        <h4>Выберите участников:</h4>
+                        <div class="members-list" id="groupMembersList">
+                            <div class="loading">Загрузка пользователей...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn primary-btn" onclick="createGroup()">
+                    <i class="fas fa-check"></i> Создать группу
+                </button>
+                <button class="modal-btn secondary-btn" onclick="hideModal('newGroupModal')">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка профиля -->
+    <div class="modal" id="profileModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-user"></i> Мой профиль</h3>
+                <button class="modal-close" onclick="hideModal('profileModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="profile-section">
+                    <div class="profile-avatar" onclick="document.getElementById('avatarInput').click()">
+                        <div class="avatar-img" id="avatarPreview">
+                            <i class="fas fa-user"></i>
+                        </div>
+                        <div class="avatar-edit">
+                            <i class="fas fa-camera"></i>
+                        </div>
+                        <input type="file" id="avatarInput" accept="image/*" 
+                               onchange="uploadAvatar(event)" style="display: none;">
+                    </div>
+                    
+                    <div class="profile-form">
+                        <div class="input-group">
+                            <i class="fas fa-user"></i>
+                            <input type="text" id="profileUsername" placeholder="Имя пользователя" required>
+                        </div>
+                        
+                        <div class="input-group">
+                            <i class="fas fa-envelope"></i>
+                            <input type="email" id="profileEmail" placeholder="Email" disabled>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn primary-btn" onclick="updateProfile()">
+                    <i class="fas fa-save"></i> Сохранить
+                </button>
+                <button class="modal-btn secondary-btn" onclick="hideModal('profileModal')">
+                    Отмена
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Модалка поиска -->
+    <div class="modal" id="searchModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3><i class="fas fa-search"></i> Поиск</h3>
+                <button class="modal-close" onclick="hideModal('searchModal')">×</button>
+            </div>
+            <div class="modal-body">
+                <div class="search-bar">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="globalSearch" placeholder="Поиск по чатам, сообщениям, пользователям...">
+                </div>
+                
+                <div class="search-results" id="searchResultsContainer">
+                    <div class="empty-state">
+                        <i class="fas fa-search"></i>
+                        <p>Введите запрос для поиска</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Экран звонка -->
+    <div class="call-screen" id="callScreen" style="display: none;">
+        <div class="call-container">
             <div class="call-header">
-                <div class="call-user-name" id="callUserName">Звонок...</div>
-                <div class="call-status" id="callStatus">Установка соединения...</div>
+                <div class="call-info">
+                    <div class="call-user-name" id="callUserName">Звонок...</div>
+                    <div class="call-status" id="callStatus">Соединение...</div>
+                </div>
             </div>
+            
             <div class="video-container">
                 <video class="remote-video" id="remoteVideo" autoplay playsinline></video>
                 <video class="local-video" id="localVideo" autoplay playsinline muted></video>
             </div>
+            
             <div class="call-controls">
-                <button class="call-btn mute-btn" onclick="toggleMute()">🎤</button>
-                <button class="call-btn video-btn" onclick="toggleVideo()">📹</button>
-                <button class="call-btn end-call" onclick="endCall()">📞</button>
-            </div>
-        </div>
-
-        <!-- ВХОДЯЩИЙ ЗВОНОК -->
-        <div class="incoming-call" id="incomingCall">
-            <h3>Входящий звонок</h3>
-            <div class="call-user-name" id="incomingCallUserName"></div>
-            <div class="call-status" id="incomingCallType"></div>
-            <div class="incoming-call-buttons">
-                <button class="call-btn accept-call" onclick="acceptCall()">📞</button>
-                <button class="call-btn reject-call" onclick="rejectCall()">✕</button>
-            </div>
-        </div>
-
-        <!-- ЗАПИСЬ ГОЛОСА -->
-        <div class="voice-recorder" id="voiceRecorder">
-            <div class="voice-timer" id="voiceTimer">00:00</div>
-            <div class="voice-wave">
-                <div class="voice-wave-inner" id="voiceWave"></div>
-            </div>
-            <button class="modal-btn primary-btn" onclick="stopVoiceRecording()">Отправить</button>
-            <button class="modal-btn secondary-btn" onclick="cancelVoiceRecording()">Отмена</button>
-        </div>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО НОВОГО ЧАТА -->
-    <div class="modal" id="newChatModal">
-        <div class="modal-content">
-            <h3>Новый чат</h3>
-            <input type="text" id="searchUser" placeholder="Поиск пользователя..." oninput="filterUsers()" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);">
-            <div id="searchResults" style="max-height: 300px; overflow-y: auto; margin: 10px 0;">
-                <div class="loading">Загрузка пользователей...</div>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn secondary-btn" onclick="hideNewChatModal()">Отмена</button>
+                <button class="call-btn mute-btn" onclick="toggleMute()">
+                    <i class="fas fa-microphone"></i>
+                </button>
+                <button class="call-btn video-btn" onclick="toggleVideo()">
+                    <i class="fas fa-video"></i>
+                </button>
+                <button class="call-btn end-call" onclick="endCall()">
+                    <i class="fas fa-phone-slash"></i>
+                </button>
             </div>
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО НОВОЙ ГРУППЫ -->
-    <div class="modal" id="newGroupModal">
-        <div class="modal-content">
-            <h3>Создать группу</h3>
-            <input type="text" id="groupName" placeholder="Название группы" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);">
-            <div class="profile-avatar" onclick="document.getElementById('groupAvatarInput').click()" id="groupAvatarPreview">
-                <i class="fas fa-camera"></i>
-                <div class="avatar-overlay">Изменить</div>
-                <input type="file" id="groupAvatarInput" accept="image/*" onchange="previewGroupAvatar(event)" style="display: none;">
-            </div>
-            <div id="groupMembersList" style="max-height: 200px; overflow-y: auto; margin: 10px 0; border: 1px solid var(--border-color); border-radius: 8px; padding: 10px;">
-                <div class="loading">Выберите участников...</div>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary-btn" onclick="createGroup()">Создать</button>
-                <button class="modal-btn secondary-btn" onclick="hideNewGroupModal()">Отмена</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- МОДАЛЬНОЕ ОКНО ПРОФИЛЯ -->
-    <div class="modal" id="profileModal">
-        <div class="modal-content">
-            <h3>Мой профиль</h3>
-            <div class="profile-section">
-                <div class="profile-avatar" onclick="document.getElementById('avatarInput').click()" id="avatarPreview">
-                    <i class="fas fa-user"></i>
-                    <div class="avatar-overlay">Изменить</div>
-                    <input type="file" id="avatarInput" accept="image/*" onchange="uploadAvatar(event)" style="display: none;">
+    <!-- Голосовой рекордер -->
+    <div class="voice-recorder" id="voiceRecorder" style="display: none;">
+        <div class="recorder-container">
+            <div class="recorder-header">
+                <div class="recording-indicator">
+                    <div class="pulse"></div>
+                    <span>Идёт запись...</span>
                 </div>
-                <input type="text" id="profileUsername" placeholder="Имя пользователя" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);">
-                <input type="email" id="profileEmail" placeholder="Email" style="width: 100%; padding: 12px; margin: 10px 0; border: 2px solid var(--border-color); border-radius: 8px; background: var(--bg-color); color: var(--text-color);" disabled>
+                <div class="voice-timer" id="voiceTimer">00:00</div>
             </div>
-            <div class="modal-buttons">
-                <button class="modal-btn primary-btn" onclick="updateProfile()">Сохранить</button>
-                <button class="modal-btn secondary-btn" onclick="hideProfileModal()">Отмена</button>
+            
+            <div class="voice-wave">
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+                <div class="wave-bar"></div>
+            </div>
+            
+            <div class="recorder-controls">
+                <button class="recorder-btn send-btn" onclick="stopVoiceRecording()">
+                    <i class="fas fa-check"></i> Отправить
+                </button>
+                <button class="recorder-btn cancel-btn" onclick="cancelVoiceRecording()">
+                    <i class="fas fa-times"></i> Отмена
+                </button>
             </div>
         </div>
     </div>
@@ -777,1358 +503,58 @@
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-auth-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.6.10/firebase-database-compat.js"></script>
-
+    <script src="https://webrtc.github.io/adapter/adapter-latest.js"></script>
+    
+    <!-- Основной скрипт -->
+    <script src="app.js"></script>
+    
+    <!-- Аудио элемент -->
+    <audio id="voicePlayer" style="display: none;"></audio>
+    
     <script>
-        // КОНФИГУРАЦИЯ FIREBASE
-        const firebaseConfig = {
-            apiKey: "AIzaSyCLmI4Ju5vsw3VY8VEvUpwm1g3Cliw_v14",
-            authDomain: "mrmeseg-11034.firebaseapp.com",
-            databaseURL: "https://mrmeseg-11034-default-rtdb.firebaseio.com",
-            projectId: "mrmeseg-11034",
-            storageBucket: "mrmeseg-11034.firebasestorage.app",
-            messagingSenderId: "704296390245",
-            appId: "1:704296390245:web:d6f6d35d3d88d84566c08c"
-        };
-
-        // Инициализация Firebase
-        firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const database = firebase.database();
-
-        let currentUser = null;
-        let currentUserData = null;
-        let currentChat = null;
-        let chats = {};
-        let allUsers = {};
-        let selectedGroupMembers = new Set();
-        let groupAvatarFile = null;
-
-        // ПЕРЕМЕННЫЕ ДЛЯ ЗВОНКОВ
-        let localStream = null;
-        let remoteStream = null;
-        let peerConnection = null;
-        let isCaller = false;
-        let currentCall = null;
-        let isMuted = false;
-        let isVideoOff = false;
-
-        // ПЕРЕМЕННЫЕ ДЛЯ ЗАПИСИ ГОЛОСА
-        let mediaRecorder = null;
-        let audioChunks = [];
-        let isRecording = false;
-        let recordingTimer = null;
-        let recordingStartTime = null;
-
-        // ОСНОВНЫЕ ФУНКЦИИ
-        window.addEventListener('load', () => {
-            console.log('Приложение загружено');
-            loadTheme();
+        // Быстрые функции для инициализации
+        function hideLoadingScreen() {
+            const loadingScreen = document.getElementById('loadingScreen');
+            const appContainer = document.getElementById('appContainer');
             
-            // Слушатель авторизации
-            auth.onAuthStateChanged(async (user) => {
-                console.log('Статус авторизации изменен:', user);
-                if (user) {
-                    currentUser = user;
-                    // Загружаем данные пользователя
-                    const userSnapshot = await database.ref('users/' + user.uid).once('value');
-                    currentUserData = userSnapshot.val();
-                    if (!currentUserData) {
-                        // Создаем данные пользователя если их нет
-                        currentUserData = {
-                            username: user.email.split('@')[0],
-                            email: user.email,
-                            createdAt: Date.now(),
-                            status: 'online',
-                            avatar: '',
-                            theme: 'light'
-                        };
-                        await database.ref('users/' + user.uid).set(currentUserData);
-                    }
-                    applyTheme(currentUserData.theme || 'light');
-                    showChats();
-                    setupCallListeners();
-                } else {
-                    document.getElementById('chatsScreen').style.display = 'none';
-                    document.getElementById('authScreen').style.display = 'block';
-                }
-            });
-
-            // Закрытие модальных окон при клике вне их
-            window.onclick = function(event) {
-                const modals = document.getElementsByClassName('modal');
-                for (let modal of modals) {
-                    if (event.target === modal) {
-                        modal.style.display = 'none';
-                    }
-                }
-            };
-
-            // Обработка Enter в формах
-            document.getElementById('loginPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') login();
-            });
-            document.getElementById('regConfirmPassword').addEventListener('keypress', function(e) {
-                if (e.key === 'Enter') register();
-            });
-        });
-
-        // ТЕМЫ
-        function loadTheme() {
-            const savedTheme = localStorage.getItem('theme') || 'light';
-            applyTheme(savedTheme);
-        }
-
-        function toggleTheme() {
-            const currentTheme = document.documentElement.getAttribute('data-theme') || 'light';
-            const newTheme = currentTheme === 'light' ? 'dark' : 'light';
-            applyTheme(newTheme);
-            if (currentUser) {
-                database.ref('users/' + currentUser.uid + '/theme').set(newTheme);
-            }
-        }
-
-        function applyTheme(theme) {
-            document.documentElement.setAttribute('data-theme', theme);
-            localStorage.setItem('theme', theme);
-        }
-
-        // ФУНКЦИИ АВТОРИЗАЦИИ
-        function showRegister() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'block';
-            hideAuthError();
-            clearAuthForms();
-        }
-
-        function showLogin() {
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'none';
-            document.getElementById('loginForm').style.display = 'block';
-            hideAuthError();
-            clearAuthForms();
-        }
-
-        function showForgotPassword() {
-            document.getElementById('loginForm').style.display = 'none';
-            document.getElementById('registerForm').style.display = 'none';
-            document.getElementById('forgotPasswordForm').style.display = 'block';
-            hideAuthError();
-            clearAuthForms();
-        }
-
-        function showAuthError(message) {
-            const errorElement = document.getElementById('authError');
-            errorElement.textContent = message;
-            errorElement.style.display = 'block';
-        }
-
-        function hideAuthError() {
-            document.getElementById('authError').style.display = 'none';
-        }
-
-        function clearAuthForms() {
-            document.getElementById('loginEmail').value = '';
-            document.getElementById('loginPassword').value = '';
-            document.getElementById('regUsername').value = '';
-            document.getElementById('regEmail').value = '';
-            document.getElementById('regPassword').value = '';
-            document.getElementById('regConfirmPassword').value = '';
-            document.getElementById('forgotEmail').value = '';
-        }
-
-        function setAuthButtonLoading(buttonId, isLoading) {
-            const button = document.getElementById(buttonId);
-            if (isLoading) {
-                button.disabled = true;
-                button.textContent = 'Загрузка...';
-            } else {
-                button.disabled = false;
-                if (buttonId === 'loginBtn') button.textContent = 'Войти';
-                else if (buttonId === 'registerBtn') button.textContent = 'Зарегистрироваться';
-                else if (buttonId === 'resetBtn') button.textContent = 'Восстановить пароль';
-            }
-        }
-
-        function validateEmail(email) {
-            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            return re.test(email);
-        }
-
-        function validateUsername(username) {
-            return /^[a-zA-Z0-9._-]+$/.test(username) && username.length >= 3 && username.length <= 20;
-        }
-
-        async function sendPasswordReset() {
-            const email = document.getElementById('forgotEmail').value.trim();
-            
-            if (!email) {
-                showAuthError("Введите ваш email");
-                return;
-            }
-
-            if (!validateEmail(email)) {
-                showAuthError("Введите корректный email адрес");
-                return;
-            }
-
-            setAuthButtonLoading('resetBtn', true);
-
-            try {
-                await auth.sendPasswordResetEmail(email);
-                showAuthError("Инструкции по восстановлению отправлены на ваш email");
-                setTimeout(() => showLogin(), 3000);
-            } catch (error) {
-                console.error('Ошибка восстановления пароля:', error);
-                if (error.code === 'auth/user-not-found') {
-                    showAuthError("Пользователь с таким email не найден");
-                } else {
-                    showAuthError("Ошибка: " + error.message);
-                }
-            } finally {
-                setAuthButtonLoading('resetBtn', false);
-            }
-        }
-
-        async function register() {
-            const username = document.getElementById('regUsername').value.trim();
-            const email = document.getElementById('regEmail').value.trim();
-            const password = document.getElementById('regPassword').value;
-            const confirmPassword = document.getElementById('regConfirmPassword').value;
-
-            hideAuthError();
-
-            // Валидация
-            if (!username || !email || !password || !confirmPassword) {
-                showAuthError("Заполните все поля!");
-                return;
-            }
-
-            if (!validateUsername(username)) {
-                showAuthError("Имя пользователя должно содержать только буквы, цифры, точки, дефисы и подчеркивания (3-20 символов)");
-                return;
-            }
-
-            if (!validateEmail(email)) {
-                showAuthError("Введите корректный email адрес");
-                return;
-            }
-
-            if (password.length < 6) {
-                showAuthError("Пароль должен содержать минимум 6 символов!");
-                return;
-            }
-
-            if (password !== confirmPassword) {
-                showAuthError("Пароли не совпадают!");
-                return;
-            }
-
-            setAuthButtonLoading('registerBtn', true);
-
-            try {
-                console.log('Регистрация пользователя:', { username, email });
-                
-                const userCredential = await auth.createUserWithEmailAndPassword(email, password);
-                const user = userCredential.user;
-
-                console.log('Пользователь создан:', user.uid);
-
-                const userData = {
-                    username: username,
-                    email: email,
-                    createdAt: Date.now(),
-                    status: 'online',
-                    avatar: '',
-                    theme: 'light'
-                };
-
-                await database.ref('users/' + user.uid).set(userData);
-                console.log('Данные пользователя сохранены');
-
-                // Автоматически входим после регистрации
-                currentUser = user;
-                currentUserData = userData;
-                showChats();
-
-            } catch (error) {
-                console.error('Ошибка регистрации:', error);
-                
-                if (error.code === 'auth/email-already-in-use') {
-                    showAuthError("Пользователь с таким email уже существует");
-                } else if (error.code === 'auth/weak-password') {
-                    showAuthError("Пароль слишком слабый");
-                } else if (error.code === 'auth/operation-not-allowed') {
-                    showAuthError("Регистрация временно недоступна");
-                } else if (error.code === 'auth/invalid-email') {
-                    showAuthError("Неверный формат email адреса");
-                } else {
-                    showAuthError("Ошибка регистрации: " + error.message);
-                }
-            } finally {
-                setAuthButtonLoading('registerBtn', false);
-            }
-        }
-
-        async function login() {
-            const email = document.getElementById('loginEmail').value.trim();
-            const password = document.getElementById('loginPassword').value;
-
-            hideAuthError();
-
-            if (!email || !password) {
-                showAuthError("Заполните все поля!");
-                return;
-            }
-
-            if (!validateEmail(email)) {
-                showAuthError("Введите корректный email адрес");
-                return;
-            }
-
-            setAuthButtonLoading('loginBtn', true);
-
-            try {
-                console.log('Вход пользователя:', { email });
-                
-                const userCredential = await auth.signInWithEmailAndPassword(email, password);
-                currentUser = userCredential.user;
-                
-                console.log('Пользователь вошел:', currentUser.uid);
-                
-                // Загружаем данные пользователя
-                const userSnapshot = await database.ref('users/' + currentUser.uid).once('value');
-                currentUserData = userSnapshot.val();
-                
-                if (!currentUserData) {
-                    // Создаем данные пользователя если их нет
-                    currentUserData = {
-                        username: email.split('@')[0],
-                        email: email,
-                        createdAt: Date.now(),
-                        status: 'online',
-                        avatar: '',
-                        theme: 'light'
-                    };
-                    await database.ref('users/' + currentUser.uid).set(currentUserData);
-                }
-                
-                showChats();
-
-            } catch (error) {
-                console.error('Ошибка входа:', error);
-                
-                if (error.code === 'auth/user-not-found') {
-                    showAuthError("Пользователь с таким email не найден");
-                } else if (error.code === 'auth/wrong-password') {
-                    showAuthError("Неверный пароль");
-                } else if (error.code === 'auth/invalid-email') {
-                    showAuthError("Неверный формат email адреса");
-                } else if (error.code === 'auth/too-many-requests') {
-                    showAuthError("Слишком много попыток входа. Попробуйте позже");
-                } else {
-                    showAuthError("Ошибка входа: " + error.message);
-                }
-            } finally {
-                setAuthButtonLoading('loginBtn', false);
-            }
-        }
-
-        function showChats() {
-            document.getElementById('authScreen').style.display = 'none';
-            document.getElementById('chatsScreen').style.display = 'flex';
-            loadAllUsers();
-            loadChats();
-        }
-
-        // ФОТОГРАФИИ И ФАЙЛЫ - ВЕРСИЯ БЕЗ STORAGE (base64)
-        function showAttachMenu() {
-            const fileInput = document.createElement('input');
-            fileInput.type = 'file';
-            fileInput.accept = 'image/*';
-            fileInput.multiple = false;
-            fileInput.onchange = (e) => {
-                if (e.target.files.length > 0) {
-                    handleFileUpload(e.target.files[0]);
-                }
-            };
-            fileInput.click();
-        }
-
-        function handleFileUpload(file) {
-            if (!file || !currentChat || !currentUser) {
-                alert('Файл не выбран или чат не открыт');
-                return;
-            }
-
-            // Проверяем что это изображение
-            if (!file.type.startsWith('image/')) {
-                alert('Пожалуйста, выберите изображение');
-                return;
-            }
-
-            // Проверяем размер файла (максимум 1MB для base64)
-            if (file.size > 1 * 1024 * 1024) {
-                alert('Изображение слишком большое. Максимальный размер: 1MB');
-                return;
-            }
-
-            const reader = new FileReader();
-            
-            reader.onload = async function(e) {
-                try {
-                    const base64Data = e.target.result;
-                    
-                    const messageData = {
-                        senderId: currentUser.uid,
-                        type: 'image',
-                        imageData: base64Data,
-                        fileName: file.name,
-                        fileSize: file.size,
-                        timestamp: Date.now()
-                    };
-
-                    // Сохраняем сообщение в базе данных
-                    const messageRef = database.ref('messages/' + currentChat.id).push();
-                    await messageRef.set(messageData);
-
-                    // Обновляем последнее сообщение в чате
-                    await database.ref('chats/' + currentChat.id).update({
-                        lastMessage: '🖼️ Изображение',
-                        lastMessageTimestamp: Date.now()
-                    });
-
-                    alert('Изображение успешно отправлено!');
-
-                } catch (error) {
-                    console.error('Ошибка отправки изображения:', error);
-                    alert('Ошибка отправки изображения: ' + error.message);
-                }
-            };
-            
-            reader.onerror = function() {
-                alert('Ошибка чтения файла');
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        // ПРОФИЛЬ - ВЕРСИЯ БЕЗ STORAGE
-        function showProfileModal() {
-            document.getElementById('profileModal').style.display = 'flex';
-            document.getElementById('profileUsername').value = currentUserData.username || '';
-            document.getElementById('profileEmail').value = currentUserData.email || '';
-            updateAvatarPreview();
-        }
-
-        function hideProfileModal() {
-            document.getElementById('profileModal').style.display = 'none';
-        }
-
-        function updateAvatarPreview() {
-            const avatarPreview = document.getElementById('avatarPreview');
-            if (currentUserData.avatar) {
-                avatarPreview.style.backgroundImage = `url('${currentUserData.avatar}')`;
-                avatarPreview.innerHTML = '<div class="avatar-overlay">Изменить</div>';
-            } else {
-                avatarPreview.style.backgroundImage = '';
-                avatarPreview.innerHTML = '<i class="fas fa-user"></i><div class="avatar-overlay">Изменить</div>';
-            }
-        }
-
-        function uploadAvatar(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            // Проверяем что это изображение
-            if (!file.type.startsWith('image/')) {
-                alert('Пожалуйста, выберите изображение');
-                return;
-            }
-
-            // Проверяем размер файла
-            if (file.size > 1 * 1024 * 1024) {
-                alert('Изображение слишком большое. Максимальный размер: 1MB');
-                return;
-            }
-
-            const reader = new FileReader();
-            
-            reader.onload = async function(e) {
-                try {
-                    const base64Data = e.target.result;
-                    
-                    // Обновляем данные пользователя
-                    await database.ref('users/' + currentUser.uid + '/avatar').set(base64Data);
-                    currentUserData.avatar = base64Data;
-                    
-                    // Обновляем превью
-                    updateAvatarPreview();
-                    
-                    alert('Аватар успешно обновлен!');
-
-                } catch (error) {
-                    console.error('Ошибка загрузки аватара:', error);
-                    alert('Ошибка загрузки аватара: ' + error.message);
-                }
-            };
-            
-            reader.onerror = function() {
-                alert('Ошибка чтения файла');
-            };
-            
-            reader.readAsDataURL(file);
-        }
-
-        async function updateProfile() {
-            const newUsername = document.getElementById('profileUsername').value.trim();
-            if (!newUsername) {
-                alert('Введите имя пользователя');
-                return;
-            }
-
-            if (!validateUsername(newUsername)) {
-                alert("Имя пользователя должно содержать только буквы, цифры, точки, дефисы и подчеркивания (3-20 символов)");
-                return;
-            }
-
-            try {
-                await database.ref('users/' + currentUser.uid + '/username').set(newUsername);
-                currentUserData.username = newUsername;
-                alert('Профиль успешно обновлен!');
-                hideProfileModal();
-                loadChats();
-
-            } catch (error) {
-                console.error('Ошибка обновления профиля:', error);
-                alert('Ошибка обновления профиля: ' + error.message);
-            }
-        }
-
-        // ГРУППЫ - ВЕРСИЯ БЕЗ STORAGE
-        function showNewGroupModal() {
-            document.getElementById('newGroupModal').style.display = 'flex';
-            loadUsersForGroup();
-            groupAvatarFile = null;
-            updateGroupAvatarPreview();
-        }
-
-        function hideNewGroupModal() {
-            document.getElementById('newGroupModal').style.display = 'none';
-            selectedGroupMembers.clear();
-            groupAvatarFile = null;
-        }
-
-        function updateGroupAvatarPreview() {
-            const groupAvatarPreview = document.getElementById('groupAvatarPreview');
-            if (groupAvatarFile) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    groupAvatarPreview.style.backgroundImage = `url('${e.target.result}')`;
-                    groupAvatarPreview.innerHTML = '<div class="avatar-overlay">Изменить</div>';
-                };
-                reader.readAsDataURL(groupAvatarFile);
-            } else {
-                groupAvatarPreview.style.backgroundImage = '';
-                groupAvatarPreview.innerHTML = '<i class="fas fa-camera"></i><div class="avatar-overlay">Изменить</div>';
-            }
-        }
-
-        function previewGroupAvatar(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            if (!file.type.startsWith('image/')) {
-                alert('Пожалуйста, выберите изображение');
-                return;
-            }
-
-            if (file.size > 1 * 1024 * 1024) {
-                alert('Изображение слишком большое. Максимальный размер: 1MB');
-                return;
-            }
-
-            groupAvatarFile = file;
-            updateGroupAvatarPreview();
-        }
-
-        function loadUsersForGroup() {
-            const membersList = document.getElementById('groupMembersList');
-            membersList.innerHTML = '';
-
-            if (Object.keys(allUsers).length === 0) {
-                membersList.innerHTML = '<div class="loading">Загрузка пользователей...</div>';
-                return;
-            }
-
-            Object.keys(allUsers).forEach(userId => {
-                if (userId !== currentUser.uid) {
-                    const user = allUsers[userId];
-                    const userDiv = document.createElement('div');
-                    userDiv.className = 'chat-item';
-                    userDiv.style.cursor = 'pointer';
-                    userDiv.style.padding = '10px';
-                    userDiv.style.margin = '5px 0';
-                    userDiv.style.border = '1px solid var(--border-color)';
-                    userDiv.style.borderRadius = '8px';
-
-                    const isSelected = selectedGroupMembers.has(userId);
-                    if (isSelected) {
-                        userDiv.style.background = 'var(--primary-color)';
-                        userDiv.style.color = 'white';
-                    }
-
-                    userDiv.innerHTML = `
-                        <div class="chat-avatar" style="width: 40px; height: 40px; font-size: 14px;">
-                            ${(user.username || 'U').charAt(0).toUpperCase()}
-                        </div>
-                        <div class="chat-info">
-                            <div class="chat-name">${user.username || 'Неизвестный'}</div>
-                        </div>
-                        ${isSelected ? '✓' : ''}
-                    `;
-
-                    userDiv.onclick = () => toggleGroupMember(userId, userDiv);
-                    membersList.appendChild(userDiv);
-                }
-            });
-
-            if (membersList.children.length === 0) {
-                membersList.innerHTML = '<div class="loading">Нет доступных пользователей</div>';
-            }
-        }
-
-        function toggleGroupMember(userId, element) {
-            if (selectedGroupMembers.has(userId)) {
-                selectedGroupMembers.delete(userId);
-                element.style.background = '';
-                element.style.color = '';
-                element.innerHTML = element.innerHTML.replace('✓', '');
-            } else {
-                selectedGroupMembers.add(userId);
-                element.style.background = 'var(--primary-color)';
-                element.style.color = 'white';
-                element.innerHTML += ' ✓';
-            }
-        }
-
-        async function createGroup() {
-            const groupName = document.getElementById('groupName').value.trim();
-            if (!groupName) {
-                alert('Введите название группы');
-                return;
-            }
-
-            if (selectedGroupMembers.size === 0) {
-                alert('Выберите участников группы');
-                return;
-            }
-
-            const groupId = 'group_' + Date.now();
-            const participants = Array.from(selectedGroupMembers);
-            participants.push(currentUser.uid);
-
-            try {
-                let groupAvatarData = '';
-                
-                // Конвертируем аватар группы в base64 если есть
-                if (groupAvatarFile) {
-                    groupAvatarData = await new Promise((resolve) => {
-                        const reader = new FileReader();
-                        reader.onload = (e) => resolve(e.target.result);
-                        reader.readAsDataURL(groupAvatarFile);
-                    });
-                }
-
-                const groupData = {
-                    name: groupName,
-                    type: 'group',
-                    participants: participants,
-                    createdBy: currentUser.uid,
-                    createdAt: Date.now(),
-                    lastMessage: 'Группа создана',
-                    lastMessageTimestamp: Date.now(),
-                    avatar: groupAvatarData
-                };
-
-                await database.ref('chats/' + groupId).set(groupData);
-                
-                // Добавляем группу в userChats каждого участника
-                for (const userId of participants) {
-                    await database.ref('userChats/' + userId + '/' + groupId).set(true);
-                }
-
-                alert('Группа успешно создана!');
-                hideNewGroupModal();
-                openChat(groupId, null, true);
-
-            } catch (error) {
-                console.error('Ошибка создания группы:', error);
-                alert('Ошибка создания группы: ' + error.message);
-            }
-        }
-
-        // ГОЛОСОВЫЕ СООБЩЕНИЯ - ЛОКАЛЬНАЯ ВЕРСИЯ (без загрузки)
-        async function toggleVoiceRecording() {
-            if (isRecording) {
-                stopVoiceRecording();
-            } else {
-                await startVoiceRecording();
-            }
-        }
-
-        async function startVoiceRecording() {
-            try {
-                if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-                    alert("Ваш браузер не поддерживает запись голоса");
-                    return;
-                }
-
-                const stream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: {
-                        echoCancellation: true,
-                        noiseSuppression: true,
-                        sampleRate: 44100
-                    } 
-                });
-                
-                mediaRecorder = new MediaRecorder(stream);
-                audioChunks = [];
-
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) {
-                        audioChunks.push(event.data);
-                    }
-                };
-
-                mediaRecorder.onstop = async () => {
-                    // Для демонстрации просто показываем уведомление
-                    // В реальном приложении здесь была бы загрузка в Storage
-                    alert('Голосовое сообщение записано! В реальном приложении оно было бы отправлено.');
-                    
-                    // Останавливаем все треки
-                    stream.getTracks().forEach(track => track.stop());
-                };
-
-                mediaRecorder.start(100);
-                isRecording = true;
-                
-                document.querySelector('.voice-btn').classList.add('recording');
-                document.getElementById('voiceRecorder').style.display = 'flex';
-                
-                recordingStartTime = Date.now();
-                recordingTimer = setInterval(updateRecordingTimer, 1000);
-                updateRecordingTimer();
-
-            } catch (error) {
-                console.error('Ошибка записи голоса:', error);
-                if (error.name === 'NotAllowedError') {
-                    alert('Разрешите доступ к микрофону для записи голосовых сообщений');
-                } else {
-                    alert('Не удалось начать запись голоса: ' + error.message);
-                }
-            }
-        }
-
-        function stopVoiceRecording() {
-            if (mediaRecorder && isRecording && mediaRecorder.state === 'recording') {
-                mediaRecorder.stop();
-                cleanupRecording();
-            }
-        }
-
-        function cancelVoiceRecording() {
-            if (mediaRecorder && isRecording) {
-                if (mediaRecorder.state === 'recording') {
-                    mediaRecorder.stop();
-                }
-                cleanupRecording();
-                audioChunks = [];
-            }
-        }
-
-        function cleanupRecording() {
-            isRecording = false;
-            document.querySelector('.voice-btn').classList.remove('recording');
-            document.getElementById('voiceRecorder').style.display = 'none';
-            if (recordingTimer) {
-                clearInterval(recordingTimer);
-                recordingTimer = null;
-            }
-        }
-
-        function updateRecordingTimer() {
-            if (!recordingStartTime) return;
-            
-            const elapsed = Math.floor((Date.now() - recordingStartTime) / 1000);
-            const minutes = Math.floor(elapsed / 60).toString().padStart(2, '0');
-            const seconds = (elapsed % 60).toString().padStart(2, '0');
-            document.getElementById('voiceTimer').textContent = `${minutes}:${seconds}`;
-            
-            const wave = document.getElementById('voiceWave');
-            const volume = Math.random() * 30 + 70;
-            wave.style.width = volume + '%';
-        }
-
-        // ЗВОНКИ - ДЕМО-ВЕРСИЯ
-        function setupCallListeners() {
-            if (!currentUser) return;
-            
-            database.ref('calls').orderByChild('to').equalTo(currentUser.uid).on('child_added', (snapshot) => {
-                const callData = snapshot.val();
-                if (callData && callData.status === 'calling') {
-                    showIncomingCall(callData);
-                }
-            });
-        }
-
-        function showIncomingCall(callData) {
-            currentCall = callData;
-            document.getElementById('incomingCallUserName').textContent = callData.callerName || 'Неизвестный';
-            document.getElementById('incomingCallType').textContent = callData.type === 'video' ? 'Видео звонок' : 'Аудио звонок';
-            document.getElementById('incomingCall').style.display = 'block';
-        }
-
-        function hideIncomingCall() {
-            document.getElementById('incomingCall').style.display = 'none';
-        }
-
-        async function startVoiceCall() {
-            if (!currentChat) {
-                alert('Чат не выбран');
-                return;
-            }
-            
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: true, 
-                    video: false 
-                });
-                
-                document.getElementById('localVideo').srcObject = localStream;
-                
-                currentCall = {
-                    callerId: currentUser.uid,
-                    callerName: currentUserData.username || 'Пользователь',
-                    to: currentChat.otherUserId,
-                    chatId: currentChat.id,
-                    type: 'voice',
-                    timestamp: Date.now(),
-                    status: 'calling'
-                };
-
-                const callRef = database.ref('calls').push();
-                await callRef.set(currentCall);
-                currentCall.id = callRef.key;
-                
-                showCallScreen();
-
-            } catch (error) {
-                console.error('Ошибка запуска звонка:', error);
-                alert('Не удалось начать звонок: ' + error.message);
-            }
-        }
-
-        async function startVideoCall() {
-            if (!currentChat) {
-                alert('Чат не выбран');
-                return;
-            }
-            
-            try {
-                localStream = await navigator.mediaDevices.getUserMedia({ 
-                    audio: true,
-                    video: true
-                });
-                
-                document.getElementById('localVideo').srcObject = localStream;
-                
-                currentCall = {
-                    callerId: currentUser.uid,
-                    callerName: currentUserData.username || 'Пользователь',
-                    to: currentChat.otherUserId,
-                    chatId: currentChat.id,
-                    type: 'video',
-                    timestamp: Date.now(),
-                    status: 'calling'
-                };
-
-                const callRef = database.ref('calls').push();
-                await callRef.set(currentCall);
-                currentCall.id = callRef.key;
-                
-                showCallScreen();
-
-            } catch (error) {
-                console.error('Ошибка запуска видео звонка:', error);
-                alert('Не удалось начать видеозвонок: ' + error.message);
-            }
-        }
-
-        function showCallScreen() {
-            document.getElementById('callScreen').style.display = 'flex';
-            const callType = currentCall.type === 'video' ? 'Видео звонок' : 'Аудио звонок';
-            document.getElementById('callUserName').textContent = currentChat.user.username || 'Пользователь';
-            document.getElementById('callStatus').textContent = `Исходящий ${callType}...`;
-        }
-
-        async function acceptCall() {
-            if (!currentCall) return;
-
-            try {
-                const mediaConstraints = {
-                    audio: true,
-                    video: currentCall.type === 'video'
-                };
-
-                localStream = await navigator.mediaDevices.getUserMedia(mediaConstraints);
-                document.getElementById('localVideo').srcObject = localStream;
-                
-                await database.ref('calls/' + currentCall.id).update({ status: 'accepted' });
-                
-                showCallScreen();
-                hideIncomingCall();
-
-            } catch (error) {
-                console.error('Ошибка принятия звонка:', error);
-                alert('Не удалось принять звонок: ' + error.message);
-                rejectCall();
-            }
-        }
-
-        function rejectCall() {
-            if (currentCall) {
-                database.ref('calls/' + currentCall.id).update({ status: 'rejected' });
-            }
-            hideIncomingCall();
-            currentCall = null;
-        }
-
-        function toggleMute() {
-            if (!localStream) return;
-            
-            const audioTracks = localStream.getAudioTracks();
-            audioTracks.forEach(track => {
-                track.enabled = !track.enabled;
-            });
-            
-            isMuted = !isMuted;
-            const muteBtn = document.querySelector('.mute-btn');
-            muteBtn.textContent = isMuted ? '🎤❌' : '🎤';
-        }
-
-        function toggleVideo() {
-            if (!localStream) return;
-            
-            const videoTracks = localStream.getVideoTracks();
-            videoTracks.forEach(track => {
-                track.enabled = !track.enabled;
-            });
-            
-            isVideoOff = !isVideoOff;
-            const videoBtn = document.querySelector('.video-btn');
-            videoBtn.textContent = isVideoOff ? '📹❌' : '📹';
-        }
-
-        async function endCall() {
-            if (currentCall) {
-                await database.ref('calls/' + currentCall.id).update({ status: 'ended' });
-            }
-            
-            if (localStream) {
-                localStream.getTracks().forEach(track => track.stop());
-                localStream = null;
-            }
-            
-            hideCallScreen();
-            hideIncomingCall();
-            currentCall = null;
-        }
-
-        function hideCallScreen() {
-            document.getElementById('callScreen').style.display = 'none';
-        }
-
-        // ОСНОВНЫЕ ФУНКЦИИ ЧАТОВ
-        async function loadAllUsers() {
-            const usersRef = database.ref('users');
-            usersRef.on('value', (snapshot) => {
-                allUsers = snapshot.val() || {};
-                console.log('Загружено пользователей:', Object.keys(allUsers).length);
-            });
-        }
-
-        function loadChats() {
-            if (!currentUser) return;
-
-            const userChatsRef = database.ref('userChats/' + currentUser.uid);
-            userChatsRef.on('value', (snapshot) => {
-                const userChats = snapshot.val() || {};
-                chats = {};
-
-                if (Object.keys(userChats).length === 0) {
-                    updateChatsList();
-                    return;
-                }
-
-                Object.keys(userChats).forEach(chatId => {
-                    const chatRef = database.ref('chats/' + chatId);
-                    chatRef.on('value', (chatSnapshot) => {
-                        const chatData = chatSnapshot.val();
-                        if (chatData) {
-                            chats[chatId] = chatData;
-                        }
-                        updateChatsList();
-                    });
-                });
-            });
-        }
-
-        function updateChatsList() {
-            const chatsList = document.getElementById('chatsList');
-            let html = '';
-
-            Object.keys(chats).forEach(chatId => {
-                const chat = chats[chatId];
-                if (!chat) return;
-
-                let chatName = 'Неизвестный чат';
-                let avatarText = '?';
-                let lastMessage = chat.lastMessage || 'Нет сообщений';
-                let avatarStyle = '';
-
-                if (chat.type === 'group') {
-                    chatName = chat.name;
-                    avatarText = '👥';
-                    if (chat.avatar) {
-                        avatarStyle = `background-image: url('${chat.avatar}')`;
-                    }
-                } else {
-                    const otherUserId = chat.participants.find(id => id !== currentUser.uid);
-                    if (otherUserId && allUsers[otherUserId]) {
-                        const otherUser = allUsers[otherUserId];
-                        chatName = otherUser.username;
-                        avatarText = (otherUser.username || 'U').charAt(0).toUpperCase();
-                        if (otherUser.avatar) {
-                            avatarStyle = `background-image: url('${otherUser.avatar}')`;
-                        }
-                    }
-                }
-
-                let messageIcon = '';
-                if (lastMessage.includes('Голосовое')) messageIcon = '🎤';
-                else if (lastMessage.includes('Изображение')) messageIcon = '🖼️';
-                else if (lastMessage.includes('Видео')) messageIcon = '🎥';
-                else if (lastMessage.includes('Аудио')) messageIcon = '🎵';
-                else if (lastMessage.includes('Файл')) messageIcon = '📎';
-
-                html += `
-                    <div class="chat-item" onclick="openChat('${chatId}', '${chat.type === 'group' ? '' : chat.participants.find(id => id !== currentUser.uid)}', ${chat.type === 'group'})">
-                        <div class="chat-avatar" style="${avatarStyle}">${avatarStyle ? '' : avatarText}</div>
-                        <div class="chat-info">
-                            <div class="chat-name">
-                                ${chatName}
-                                ${chat.type === 'group' ? '<span class="chat-type">(Группа)</span>' : ''}
-                            </div>
-                            <div class="last-message">
-                                ${messageIcon} ${lastMessage}
-                            </div>
-                        </div>
-                    </div>
-                `;
-            });
-
-            chatsList.innerHTML = html || '<div class="loading">Нет чатов. Создайте новый чат!</div>';
-        }
-
-        function openChat(chatId, otherUserId, isGroup = false) {
-            const chat = chats[chatId];
-            if (!chat) {
-                alert('Ошибка: чат не найден');
-                return;
-            }
-
-            currentChat = { 
-                id: chatId, 
-                type: isGroup ? 'group' : 'private', 
-                user: isGroup ? { username: chat.name } : (allUsers[otherUserId] || { username: 'Неизвестный' }),
-                otherUserId: otherUserId
-            };
-
-            document.getElementById('chatsScreen').style.display = 'none';
-            document.getElementById('chatScreen').style.display = 'flex';
-            
-            document.getElementById('chatUserName').textContent = isGroup ? chat.name : currentChat.user.username;
-            document.getElementById('chatUserStatus').textContent = isGroup ? 'группа' : 'в сети';
-            
-            loadMessages(chatId);
-        }
-
-        function showChatsList() {
-            document.getElementById('chatScreen').style.display = 'none';
-            document.getElementById('chatsScreen').style.display = 'flex';
-            currentChat = null;
-        }
-
-        function loadMessages(chatId) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            messagesContainer.innerHTML = '<div class="loading">Загрузка сообщений...</div>';
-
-            const messagesRef = database.ref('messages/' + chatId);
-            messagesRef.off();
-            
-            messagesRef.orderByChild('timestamp').on('value', (snapshot) => {
-                const messages = snapshot.val() || {};
-                messagesContainer.innerHTML = '';
-
-                if (Object.keys(messages).length === 0) {
-                    messagesContainer.innerHTML = '<div class="loading">Нет сообщений</div>';
-                    return;
-                }
-
-                const sortedMessages = Object.keys(messages)
-                    .map(key => ({ id: key, ...messages[key] }))
-                    .sort((a, b) => a.timestamp - b.timestamp);
-
-                sortedMessages.forEach(message => {
-                    displayMessage(message);
-                });
-
-                scrollToBottom();
-            });
-        }
-
-        function displayMessage(message) {
-            const messagesContainer = document.getElementById('messagesContainer');
-            const messageDiv = document.createElement('div');
-            
-            const isMyMessage = message.senderId === currentUser.uid;
-            messageDiv.className = `message ${isMyMessage ? 'my-message' : 'other-message'}`;
-
-            let messageContent = '';
-            if (message.type === 'image') {
-                messageContent = `
-                    <img src="${message.imageData}" class="message-image" alt="Изображение">
-                    <div>📸 Изображение</div>
-                `;
-            } else if (message.type === 'file') {
-                messageContent = `
-                    <div class="message-file">
-                        <i class="fas fa-file"></i>
-                        <div>
-                            <div>${message.fileName}</div>
-                            <div style="font-size: 10px;">${formatFileSize(message.fileSize)}</div>
-                        </div>
-                    </div>
-                `;
-            } else {
-                messageContent = `<div>${message.text || ''}</div>`;
-            }
-
-            messageDiv.innerHTML = `
-                ${messageContent}
-                <div class="message-time">${formatTime(message.timestamp)}</div>
-            `;
-            
-            messagesContainer.appendChild(messageDiv);
-        }
-
-        function formatFileSize(bytes) {
-            if (!bytes) return '0 Bytes';
-            const k = 1024;
-            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
-            const i = Math.floor(Math.log(bytes) / Math.log(k));
-            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
-        }
-
-        async function sendMessage() {
-            if (!currentChat) {
-                alert('Чат не выбран');
-                return;
-            }
-            
-            const messageInput = document.getElementById('messageInput');
-            const text = messageInput.value.trim();
-            
-            if (!text) return;
-
-            const messageData = {
-                senderId: currentUser.uid,
-                text: text,
-                timestamp: Date.now(),
-                type: 'text'
-            };
-
-            try {
-                const messageRef = database.ref('messages/' + currentChat.id).push();
-                await messageRef.set(messageData);
-                
-                await database.ref('chats/' + currentChat.id).update({
-                    lastMessage: text,
-                    lastMessageTimestamp: Date.now()
-                });
-
-                messageInput.value = '';
-                scrollToBottom();
-
-            } catch (error) {
-                console.error('Ошибка отправки сообщения:', error);
-                alert('Ошибка отправки сообщения: ' + error.message);
-            }
-        }
-
-        // ВСПОМОГАТЕЛЬНЫЕ ФУНКЦИИ
-        function formatTime(timestamp) {
-            return new Date(timestamp).toLocaleTimeString('ru-RU', { 
-                hour: '2-digit', 
-                minute: '2-digit' 
-            });
-        }
-
-        function handleKeyPress(event) {
-            if (event.key === 'Enter') {
-                sendMessage();
-            }
-        }
-
-        function scrollToBottom() {
-            const messagesContainer = document.getElementById('messagesContainer');
+            loadingScreen.style.opacity = '0';
             setTimeout(() => {
-                messagesContainer.scrollTop = messagesContainer.scrollHeight;
-            }, 100);
-        }
-
-        function logout() {
-            if (currentCall) endCall();
-            auth.signOut();
-            currentUser = null;
-            currentUserData = null;
-            chats = {};
-            allUsers = {};
-        }
-
-        // МОДАЛЬНЫЕ ОКНА ДЛЯ ЧАТОВ
-        function showNewChatModal() {
-            document.getElementById('newChatModal').style.display = 'flex';
-            loadUsersForNewChat();
-        }
-
-        function hideNewChatModal() {
-            document.getElementById('newChatModal').style.display = 'none';
-        }
-
-        function filterUsers() {
-            const searchTerm = document.getElementById('searchUser').value.toLowerCase();
-            const searchResults = document.getElementById('searchResults');
-            
-            if (!searchTerm) {
-                loadUsersForNewChat();
-                return;
-            }
-            
-            let html = '';
-            let foundUsers = false;
-            
-            Object.keys(allUsers).forEach(userId => {
-                if (userId !== currentUser.uid) {
-                    const user = allUsers[userId];
-                    const username = user.username || 'Неизвестный';
-                    
-                    if (username.toLowerCase().includes(searchTerm)) {
-                        foundUsers = true;
-                        html += `
-                            <div class="chat-item" style="cursor: pointer; padding: 10px;" onclick="createPrivateChat('${userId}')">
-                                <div class="chat-avatar">${username.charAt(0).toUpperCase()}</div>
-                                <div class="chat-info">
-                                    <div class="chat-name">${username}</div>
-                                </div>
-                            </div>
-                        `;
-                    }
-                }
-            });
-            
-            if (!foundUsers) {
-                html = '<div class="loading">Пользователи не найдены</div>';
-            }
-            
-            searchResults.innerHTML = html;
-        }
-
-        function loadUsersForNewChat() {
-            const searchResults = document.getElementById('searchResults');
-            
-            if (Object.keys(allUsers).length === 0) {
-                searchResults.innerHTML = '<div class="loading">Пользователи не загружены</div>';
-                return;
-            }
-            
-            let html = '';
-            let hasUsers = false;
-            
-            Object.keys(allUsers).forEach(userId => {
-                if (userId !== currentUser.uid) {
-                    hasUsers = true;
-                    const user = allUsers[userId];
-                    html += `
-                        <div class="chat-item" style="cursor: pointer; padding: 10px;" onclick="createPrivateChat('${userId}')">
-                            <div class="chat-avatar">${(user.username || 'U').charAt(0).toUpperCase()}</div>
-                            <div class="chat-info">
-                                <div class="chat-name">${user.username || 'Неизвестный'}</div>
-                            </div>
-                        </div>
-                    `;
-                }
-            });
-
-            if (!hasUsers) {
-                html = '<div class="loading">Нет доступных пользователей</div>';
-            }
-            
-            searchResults.innerHTML = html;
-        }
-
-        async function createPrivateChat(otherUserId) {
-            const otherUser = allUsers[otherUserId];
-            if (!otherUser) {
-                alert('Ошибка: пользователь не найден');
-                return;
-            }
-            
-            const chatId = [currentUser.uid, otherUserId].sort().join('_');
-            
-            const existingChatRef = database.ref('chats/' + chatId);
-            const existingChat = await existingChatRef.once('value');
-            
-            if (existingChat.exists()) {
-                hideNewChatModal();
-                openChat(chatId, otherUserId);
-                return;
-            }
-            
-            const chatData = {
-                participants: [currentUser.uid, otherUserId],
-                createdAt: Date.now(),
-                lastMessage: '',
-                lastMessageTimestamp: Date.now(),
-                type: 'private'
-            };
-            
-            try {
-                await database.ref('chats/' + chatId).set(chatData);
-                await database.ref('userChats/' + currentUser.uid + '/' + chatId).set(true);
-                await database.ref('userChats/' + otherUserId + '/' + chatId).set(true);
+                loadingScreen.style.display = 'none';
+                appContainer.style.display = 'block';
                 
-                hideNewChatModal();
-                openChat(chatId, otherUserId);
-                
-            } catch (error) {
-                console.error('Ошибка создания чата:', error);
-                alert('Ошибка создания чата: ' + error.message);
+                // Проверяем месяц для показа баннера
+                const now = new Date();
+                if (now.getMonth() === 11) { // Декабрь
+                    setTimeout(() => {
+                        document.getElementById('newYearBanner').style.display = 'block';
+                    }, 1000);
+                }
+            }, 500);
+        }
+        
+        function hideBanner() {
+            document.getElementById('newYearBanner').style.display = 'none';
+        }
+        
+        function togglePassword(inputId) {
+            const input = document.getElementById(inputId);
+            const icon = input.parentNode.querySelector('.toggle-password');
+            
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.remove('fa-eye');
+                icon.classList.add('fa-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.remove('fa-eye-slash');
+                icon.classList.add('fa-eye');
             }
         }
-
-        console.log('MrMessage инициализирован (без Firebase Storage)');
+        
+        // Инициализация при загрузке
+        window.addEventListener('DOMContentLoaded', () => {
+            setTimeout(hideLoadingScreen, 1500);
+        });
     </script>
 </body>
 </html>
