@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pidrilni Script v7.0 — MM2 Ultimate</title>
+    <style>
+        :root {
+            --bg-color: #0b0d12;
+            --panel-bg: #11141a;
+            --accent-color: #32e1b4;
+            --accent-glow: rgba(50, 225, 180, 0.2);
+            --text-main: #ffffff;
+            --text-muted: #8fa0af;
+            --card-bg: #161b24;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .background-glow {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: -1;
+            background: 
+                radial-gradient(circle at 20% 30%, rgba(50, 225, 180, 0.05) 0%, transparent 40%),
+                radial-gradient(circle at 80% 70%, rgba(255, 50, 80, 0.03) 0%, transparent 45%);
+            animation: pulseGlow 10s ease-in-out infinite alternate;
+        }
+
+        @keyframes pulseGlow {
+            0% { transform: scale(1); }
+            100% { transform: scale(1.1); }
+        }
+
+        .container {
+            width: 100%;
+            max-width: 750px;
+            margin: 60px 20px;
+            padding: 40px;
+            background-color: var(--panel-bg);
+            border: 1.5px solid var(--accent-color);
+            border-radius: 16px;
+            box-shadow: 0 15px 40px rgba(50, 225, 180, 0.08);
+            position: relative;
+            box-sizing: border-box;
+            backdrop-filter: blur(8px);
+        }
+
+        .mac-controls {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            display: flex;
+            gap: 8px;
+        }
+
+        .circle {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            transition: transform 0.2s;
+        }
+        .circle:hover { transform: scale(1.15); }
+        .close { background-color: #ff5f57; }
+        .minimize { background-color: #ffbd2e; }
+        .expand { background-color: #27c93f; }
+
+        .header-section {
+            text-align: center;
+            margin-bottom: 35px;
+        }
+
+        h1 {
+            font-size: 32px;
+            font-weight: 800;
+            letter-spacing: -0.5px;
+            margin: 10px 0 5px 0;
+            text-shadow: 0 0 15px var(--accent-glow);
+        }
+
+        .version {
+            color: var(--accent-color);
+            font-weight: 700;
+        }
+
+        .author {
+            font-size: 14px;
+            color: var(--text-muted);
+            font-weight: 500;
+        }
+
+        .badge-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .badge {
+            background: rgba(50, 225, 180, 0.1);
+            border: 1px solid var(--accent-color);
+            color: var(--accent-color);
+            padding: 6px 14px;
+            font-size: 12px;
+            font-weight: 700;
+            border-radius: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            box-shadow: 0 4px 10px rgba(50, 225, 180, 0.05);
+        }
+
+        .badge.keyless {
+            background: rgba(39, 201, 63, 0.1);
+            border-color: #27c93f;
+            color: #27c93f;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 35px;
+        }
+
+        @media (max-width: 600px) {
+            .features-grid { grid-template-columns: 1fr; }
+        }
+
+        .feature-card {
+            background-color: var(--card-bg);
+            border: 1px solid #222a36;
+            border-radius: 8px;
+            padding: 16px;
+            transition: all 0.3s ease;
+        }
+
+        .feature-card:hover {
+            border-color: var(--accent-color);
+            transform: translateY(-3px);
+            box-shadow: 0 6px 15px rgba(50, 225, 180, 0.03);
+        }
+
+        .feature-card h4 {
+            margin: 0 0 6px 0;
+            color: #fff;
+            font-size: 15px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .feature-card p {
+            margin: 0;
+            color: var(--text-muted);
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .loader-title {
+            font-size: 14px;
+            font-weight: 700;
+            color: #fff;
+            margin-bottom: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: center;
+        }
+
+        .code-container {
+            position: relative;
+            margin-bottom: 5px;
+        }
+
+        .code-box {
+            background-color: #06080c;
+            border: 2px dashed var(--accent-color);
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Fira Code', 'Courier New', Courier, monospace;
+            font-size: 14px;
+            color: #fff;
+            box-shadow: 0 0 20px rgba(50, 225, 180, 0.1);
+            text-align: center;
+            word-break: break-all;
+            user-select: all;
+            -webkit-user-select: all;
+        }
+
+        .hint-text {
+            color: var(--text-muted);
+            font-size: 12px;
+            text-align: center;
+            margin-top: 8px;
+        }
+
+        .footer {
+            margin-top: auto;
+            margin-bottom: 20px;
+            font-size: 12px;
+            color: var(--text-muted);
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="background-glow"></div>
+
+    <div class="container">
+        <div class="mac-controls">
+            <div class="circle close"></div>
+            <div class="circle minimize"></div>
+            <div class="circle expand"></div>
+        </div>
+        
+        <div class="header-section">
+            <h1>Pidrilni Script <span class="version">v7.0</span></h1>
+            <div class="author">by mrandrioff</div>
+            <div class="badge-container">
+                <div class="badge keyless">Без ключа / Keyless</div>
+                <div class="badge">Safe & Optimized</div>
+            </div>
+        </div>
+        
+        <div class="features-grid">
+            <div class="feature-card">
+                <h4>🎯 Выбор цели тапом</h4>
+                <p>Выбирай любого игрока для фана и троллинга прямо касанием по его персонажу на экране.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🌪️ Умный Void Fling</h4>
+                <p>Усовершенствованный метод кручения хитбокса, швыряющий Убийцу или Шерифа под карту без оружия.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🔫 Моментальный Grab Gun</h4>
+                <p>Скрипт сам за секунду подбирает упавший пистолет и сразу безопасно возвращает тебя назад.</p>
+            </div>
+            <div class="feature-card">
+                <h4>👁️ Продвинутый ESP</h4>
+                <p>Цветная подсветка силуэтов всех ролей, потерянного оружия, а также скрытых монет сквозь любые стены.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🚪 Физика &amp; Noclip</h4>
+                <p>Настраиваемый Fly, прохождение сквозь стены и моментальное переключение стадий WalkSpeed / JumpPower.</p>
+            </div>
+            <div class="feature-card">
+                <h4>🛡️ Абсолютная защита</h4>
+                <p>Встроенный автоматический уворот (Auto Evade) от Мардера и надежный встроенный Anti-AFK bypass.</p>
+            </div>
+        </div>
+
+        <div class="loader-title">Скопируйте скрипт ниже:</div>
+        <div class="code-container">
+            <div class="code-box">loadstring(game:HttpGet("https://gist.githubusercontent.com/MrAndri12/dc52b81ca6d992b16d11849a0055fab7/raw/146c482fb4f3617f85ba5df26483a88c848932ee/script.lua"))()</div>
+        </div>
+        <div class="hint-text">Зажмите пальцем или дважды кликните по коду в рамке, чтобы выделить и скопировать его.</div>
+    </div>
+
+    <div class="footer">
+        &copy; 2026 Pidrilni Software. Разработано для Mobile & PC платформ.
+    </div>
+</body>
+</html>
